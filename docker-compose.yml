@@ -1,0 +1,16 @@
+version: "2" # specify docker-compose version
+
+# Define the services/containers to be run
+services:
+    soccer-api: 
+        build:
+            context: .
+            dockerfile: Dockerfile
+        ports:
+            - "8080:3000"
+        networks:
+            - app-network
+
+networks:
+    app-network:
+        driver: bridge
