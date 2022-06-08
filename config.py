@@ -3,6 +3,7 @@ import os
 # set the base directory
 basedir = os.path.abspath(os.path.dirname(__name__))
 
+SQLITE_PREFIX = 'sqlite:///'
 
 # Create the super class
 class Config(object):
@@ -14,7 +15,7 @@ class Config(object):
 # Create the development config
 class DevelopmentConfig(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///'+os.path.join(basedir, 'dev-data.db')
+    SQLALCHEMY_DATABASE_URI = SQLITE_PREFIX + os.path.join(basedir, 'dev-data.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     MAIL_SERVER = os.environ.get('MAIL_SERVER')
     MAIL_PORT = os.environ.get('MAIL_PORT')
@@ -28,11 +29,11 @@ class DevelopmentConfig(Config):
 class TestingConfig(Config):
     DEBUG = False
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'test-data.db')
+    SQLALCHEMY_DATABASE_URI = SQLITE_PREFIX + os.path.join(basedir, 'test-data.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 # create the production config
 class ProductionConfig(Config):
     DEBUG = False
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'data.db')
+    SQLALCHEMY_DATABASE_URI = SQLITE_PREFIX + os.path.join(basedir, 'data.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False

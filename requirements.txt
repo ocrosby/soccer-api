@@ -1,3 +1,9 @@
 flask
 flask_migrate
 flask_mail
+flask_login
+werkzeug
+wtforms
+python-dotenv
+email_validator
+itsdangerous==2.0.0
