@@ -38,6 +38,33 @@ You can run your application by opening your terminal with the virtual environme
 (env)$ flask run
 ```
 
+Activating a Virtual Env Session
+
+```bash
+> ./env/bin/activate
+```
+
+Deactivating a Virtual Env Session
+
+```bash
+(env) deactivate
+```
+
+
+Running in Debug Mode
+
+```bash
+> export FLASK_DEBUG=1
+> flask run
+```
+
+Specifying the Startup File
+
+```bash
+> export FLASK_APP=run.py
+> flask run
+```
+
 
 
 ## References
