@@ -1,11 +1,16 @@
 {
     "cSpell.words": [
+        "clublogo",
         "diii",
         "ecnl",
+        "jsonify",
         "NAIA",
         "NJCAA",
+        "pylint",
+        "pytest",
         "restplus",
         "restx",
-        "jsonify"
+        "statecode",
+        "topdrawersoccer"
     ]
 }
