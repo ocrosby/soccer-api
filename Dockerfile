@@ -13,4 +13,5 @@ COPY . /app
 
 ENTRYPOINT [ "python3" ]
 
-CMD [ "run.py" ]
+# CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0"]
+CMD [ "app.py" ]
