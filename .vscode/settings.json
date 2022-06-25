@@ -8,6 +8,7 @@
         "NJCAA",
         "pylint",
         "pytest",
+        "reqparse",
         "restplus",
         "restx",
         "statecode",

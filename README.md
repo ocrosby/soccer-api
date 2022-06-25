@@ -1,4 +1,5 @@
-# soccer-api
+# Soccer API
+
 A restful API for soccer information.
 
 Create a virtual environment and store it's tools in the "env" folder.
@@ -50,7 +51,6 @@ Deactivating a Virtual Env Session
 (env) deactivate
 ```
 
-
 Running in Debug Mode
 
 ```bash
@@ -61,7 +61,7 @@ Running in Debug Mode
 Specifying the Startup File
 
 ```bash
-> export FLASK_APP=run.py
+> export FLASK_APP=app.py
 > flask run
 ```
 
