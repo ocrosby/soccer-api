@@ -13,4 +13,4 @@ api = Api(blueprint,
           )
 
 api.add_namespace(ecnl, path='/ecnl')
-api.add_namespace(topdrawersoccer, path='/tgs')
+api.add_namespace(topdrawersoccer, path='/tds')

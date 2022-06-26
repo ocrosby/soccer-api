@@ -15,7 +15,7 @@ class TopDrawerSoccer:
         """Constructor"""
         pass
 
-    def get_conference_commits(self, gender: str, division: str, name: str):
+    def get_conference_commits(self, gender: str, division: str, name: str, year: int):
         conference = self.get_conference(gender, division, name)
 
         url = conference['url'] + "/tab-commitments#commitments"
@@ -51,7 +51,8 @@ class TopDrawerSoccer:
                     player["state"] = columns[4].text.strip()
                     player["club"] = columns[5].text.strip()
 
-                    school["players"].append(player)
+                    if int(player["year"]) == year:
+                        school["players"].append(player)
 
         return schools
 
