@@ -1,15 +1,9 @@
-from email.policy import default
-import requests
-
 from requests.exceptions import HTTPError
 
-from bs4 import BeautifulSoup
 from http import HTTPStatus
-from flask import jsonify
 from flask_restx import Namespace, Resource, fields, reqparse
 
 from common import utils
-
 
 ns = Namespace('tds', description='TopDrawerSoccer related operations')
 

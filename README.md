@@ -61,7 +61,7 @@ Running in Debug Mode
 Specifying the Startup File
 
 ```bash
-> export FLASK_APP=app.py
+> export FLASK_APP=wsgi.py
 > flask run
 ```
 

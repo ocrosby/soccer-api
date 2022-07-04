@@ -99,6 +99,7 @@ class PlayerSearch:
     def __init__(self):
         """Constructor"""
         self.soup = None
+        self.prefix = "https://www.topdrawersoccer.com"
 
     def get_gender_id(self, args):
         gender = args["gender"]
@@ -219,14 +220,18 @@ class PlayerSearch:
         image = item.find("img", class_="imageProfile")
 
         if image is not None:
-            return image["src"]
+            return self.prefix + image["src"]
 
         return None
 
     def extract_rating(self, item):
         rating = item.find("span", class_="rating")["style"]
         rating = int(rating.split(':')[-1].split('%')[0]) // 20
-        rating = str(rating) + ' star'
+
+        if rating > 0:
+            rating = str(rating) + ' star'
+        else:
+            rating = "Not Rated"
 
         return rating
 
@@ -244,7 +249,7 @@ class PlayerSearch:
 
         if commitment_span is not None:
             anchor = commitment_span.find("a")
-            return anchor["href"]
+            return self.prefix + anchor["href"]
 
         return None
 
@@ -261,7 +266,7 @@ class PlayerSearch:
     def extract_player_url(self, item):
         name_anchor = item.find("a", class_="bd")
 
-        return name_anchor["href"]
+        return self.prefix + name_anchor["href"]
 
     def extract_player(self, item):
         player = {}

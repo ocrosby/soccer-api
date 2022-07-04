@@ -1,7 +1,7 @@
 # pylint: disable=redefined-outer-name
 import pytest
 
-from app import app as flask_app
+from api.app import app as flask_app
 
 @pytest.fixture
 def app():
@@ -10,4 +10,3 @@ def app():
 @pytest.fixture
 def client(app):
     return app.test_client()
-    
