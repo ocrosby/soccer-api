@@ -1,19 +1,20 @@
 {
     "cSpell.words": [
-        "clublogo",
-        "clubplayer",
-        "diii",
-        "ecnl",
-        "healthz",
-        "jsonify",
-        "NAIA",
-        "NJCAA",
-        "pylint",
-        "pytest",
-        "reqparse",
-        "restplus",
-        "restx",
-        "statecode",
-        "topdrawersoccer"
+      "clublogo",
+      "clubplayer",
+      "diii",
+      "ecnl",
+      "healthz",
+      "jsonify",
+      "NAIA",
+      "NCAARPI",
+      "NJCAA",
+      "pylint",
+      "pytest",
+      "reqparse",
+      "restplus",
+      "restx",
+      "statecode",
+      "topdrawersoccer"
     ]
 }

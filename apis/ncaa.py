@@ -9,7 +9,7 @@ from flask_restx import Namespace, Resource, fields
 ns = Namespace('ncaa', description='NCAA related operations')
 
 ncaa_coaches_di_ranking_model = ns.model('CoachesRanking', {
-    'rank': fields.Integer(required=True, description='The ranking of the school'),
+    'rank': fields.Integer(required=True, description='The coaches ranking of the school'),
     'school': fields.String(required=True, description='The name of the school'),
     'points': fields.Integer(required=True, description='The points for the school'),
     'record': fields.String(required=True, description='The record of the school'),

@@ -1,17 +1,27 @@
-FROM python:3.8.2-alpine
+FROM python:3.8
 
-RUN python -m pip install --upgrade pip
+RUN apt-get update
+RUN apt-get install -y --no-install-recommends \
+        libatlas-base-dev gfortran nginx supervisor
 
-# We copy just the requirements.txt first to leverage Docker cache
-COPY ./requirements.txt /app/requirements.txt
+RUN pip3 install uwsgi
 
-WORKDIR /app
+COPY ./requirements.txt /project/requirements.txt
 
-RUN pip3 install -r requirements.txt
+RUN pip3 install -r /project/requirements.txt
 
-COPY . /app
+RUN useradd --no-create-home nginx
 
-ENTRYPOINT [ "python3" ]
+RUN rm -f /etc/nginx/sites-enabled/default
+RUN rm -r /root/.cache
 
-# CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0"]
-CMD [ "app.py" ]
+COPY server-conf/nginx.conf /etc/nginx/
+COPY server-conf/flask-site-nginx.conf /etc/nginx/conf.d/
+COPY server-conf/uwsgi.ini /etc/uwsgi/
+COPY server-conf/supervisord.conf /etc/supervisor/
+
+COPY . /project
+
+WORKDIR /project
+
+CMD ["/usr/bin/supervisord"]
