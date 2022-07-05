@@ -4,6 +4,7 @@ astroid==2.11.6
 attrs==21.4.0
 autopep8==1.6.0
 beautifulsoup4==4.11.1
+black==22.6.0
 blinker==1.4
 certifi==2022.5.18.1
 charset-normalizer==2.0.12
@@ -34,7 +35,9 @@ lazy-object-proxy==1.7.1
 Mako==1.2.0
 MarkupSafe==2.1.1
 mccabe==0.6.1
+mypy-extensions==0.4.3
 packaging==21.3
+pathspec==0.9.0
 platformdirs==2.5.2
 pluggy==1.0.0
 py==1.11.0

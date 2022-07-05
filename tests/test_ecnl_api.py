@@ -6,4 +6,3 @@ def test_get_clubs(app, client):
     assert data[0]["id"] == 1
     assert data[0]["name"] == "Item 1"
     assert len(data[0]["details"]) == 2
-    

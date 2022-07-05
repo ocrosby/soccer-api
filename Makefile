@@ -24,7 +24,7 @@ develop:
 docker-build:
 	@docker build . -t ocrosby/soccer-api
 
-docker-run: docker-build
+docker-run:
 	@docker run -p 8080:8080 ocrosby/soccer-api
 
 test:
