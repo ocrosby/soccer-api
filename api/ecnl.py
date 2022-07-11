@@ -3,6 +3,7 @@ from http import HTTPStatus
 import requests
 from flask_restx import Namespace, Resource, fields
 from requests.exceptions import HTTPError
+from common import utils
 
 ns = Namespace("ecnl", description="ECNL related operations")
 
@@ -29,31 +30,9 @@ class ClubList(Resource):
     @ns.marshal_list_with(club_model)
     def get(self):
         """List all clubs"""
-
-        url = "https://public.totalglobalsports.com/api/Event/get-org-club-list-by-orgID/9"
-
         try:
-            response = requests.get(url)
-
-            response.raise_for_status()
-
-            json_response = response.json()
-
-            clubs = []
-
-            for item in json_response["data"]:
-                club = {}
-
-                club["id"] = item["clubID"]
-                club["orgId"] = item["orgID"]
-                club["name"] = item["clubFullName"].strip()
-                club["city"] = item["city"].strip()
-                club["state"] = item["stateCode"].strip()
-                club["logo"] = item["clubLogo"].strip()
-
-                clubs.append(club)
-
-            return clubs
+            search = utils.ClubSearch()
+            return search.get_ecnl_clubs()
         except HTTPError as http_err:
             return ns.abort(
                 HTTPStatus.BAD_REQUEST.value, f"HTTP error occurred: {http_err}"

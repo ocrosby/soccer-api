@@ -95,6 +95,98 @@ state_lookup = {
     "Wyoming": 51
 }
 
+def get_conference_name_from_cell(cell):
+    strong_tags = cell.find_all("strong")
+
+    for strong_tag in strong_tags:
+        text = strong_tag.text.strip()
+
+        if len(text) > 0:
+            text = text.upper()
+            text = text.replace("CONFERENCE", "")
+            text = text.strip()
+            return text
+
+    return None
+
+def get_state_from_item(item):
+    if item is None:
+        return None
+
+    text = item.text.strip()
+
+    if "(" in text and ")" in text:
+        state = text[text.find("(")+1:text.find(")")]
+        state = state.strip()
+        return state
+
+    return None
+
+def get_clubs_from_cell(cell):
+    clubs = []
+
+    outer_list = cell.find("ul")
+    inner_list = outer_list.find("ul")
+    items = inner_list.find_all("li")
+
+    for item in items:
+        anchor = item.find("a")
+        club = { "name": anchor.text.strip(), "state": get_state_from_item(item), "conference": get_conference_name_from_cell(cell), "url": anchor["href"] }
+        clubs.append(club)
+
+    return clubs
+class ClubSearch:
+    def __init__(self):
+        """Constructor"""
+        pass
+
+    def get_ga_clubs(self):
+        url = "https://girlsacademyleague.com/members/"
+
+        response = requests.get(url)
+
+        soup = BeautifulSoup(response.content, "html.parser")
+
+        tabs = soup.find_all("div", class_=["et_pb_tab_content"])
+
+        clubs = []
+        for tab in tabs:
+            cells = tab.find_all("td")
+
+            if len(cells) == 0:
+                continue # Skip over any tabs without cells
+
+            first_cell = cells[0]
+
+            clubs.extend(get_clubs_from_cell(first_cell))
+
+        return clubs
+
+    def get_ecnl_clubs(self):
+        url = "https://public.totalglobalsports.com/api/Event/get-org-club-list-by-orgID/9"
+
+        response = requests.get(url)
+
+        response.raise_for_status()
+
+        json_response = response.json()
+
+        clubs = []
+
+        for item in json_response["data"]:
+            club = {}
+
+            club["id"] = item["clubID"]
+            club["orgId"] = item["orgID"]
+            club["name"] = item["clubFullName"].strip()
+            club["city"] = item["city"].strip()
+            club["state"] = item["stateCode"].strip()
+            club["logo"] = item["clubLogo"].strip()
+
+            clubs.append(club)
+
+        return clubs
+
 class PlayerSearch:
     def __init__(self):
         """Constructor"""
@@ -408,3 +500,4 @@ class TopDrawerSoccer:
                     conferences.append({ "id": conference_id, "name": name, "url": url, "schools": schools})
 
         return conferences
+

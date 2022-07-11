@@ -7,6 +7,7 @@ from .ecnl import ns as ecnl
 from .ncaa import ns as ncaa
 from .tds import ns as tds
 from .ga import ns as ga
+from .club import ns as club
 
 blueprint = Blueprint("api", __name__, url_prefix="/api")
 
@@ -21,6 +22,7 @@ api.add_namespace(ecnl, path="/ecnl")
 api.add_namespace(tds, path="/tds")
 api.add_namespace(ncaa, path="/ncaa")
 api.add_namespace(ga, path="/ga")
+api.add_namespace(club, path="/club")
 
 app = Flask(__name__)
 app.register_blueprint(blueprint)
