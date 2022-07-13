@@ -636,7 +636,7 @@ class TopDrawerSoccer:
                         club = player["club"]
 
                         if club is None or len(club) == 0:
-                            player["league"] = "Unknown"
+                            player["league"] = "Other"
                         else:
                             player["league"] = mapping[club]
         except Exception as err:
