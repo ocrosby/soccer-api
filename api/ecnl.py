@@ -21,6 +21,7 @@ club_model = ns.model(
     },
 )
 
+search = utils.ClubSearch()
 
 @ns.route("/clubs")
 class ClubList(Resource):
@@ -30,8 +31,9 @@ class ClubList(Resource):
     @ns.marshal_list_with(club_model)
     def get(self):
         """List all clubs"""
+        global search
+
         try:
-            search = utils.ClubSearch()
             return search.get_ecnl_clubs()
         except HTTPError as http_err:
             return ns.abort(
