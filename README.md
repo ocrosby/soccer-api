@@ -72,3 +72,4 @@ Specifying the Startup File
 * [Structuring Large Applications](https://www.section.io/engineering-education/structuring-large-applications-with-blueprints-and-application-factory-in-flask/)
 * [Flask Blueprint Architect](https://realpython.com/flask-blueprint/)
 * [Flask Restful](https://dev.to/paurakhsharma/flask-rest-api-part-2-better-structure-with-blueprint-and-flask-restful-2n93)
+* [Flask Caching](https://flask-caching.readthedocs.io/en/latest/)
