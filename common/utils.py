@@ -138,12 +138,17 @@ def get_clubs_from_cell(cell):
         clubs.append(club)
 
     return clubs
+
 class ClubSearch:
     def __init__(self):
         """Constructor"""
-        pass
+        self.ga_clubs = None
+        self.ecnl_clubs = None
 
     def get_ga_clubs(self):
+        if self.ga_clubs is not None:
+            return self.ga_clubs
+
         url = "https://girlsacademyleague.com/members/"
 
         response = requests.get(url)
@@ -163,9 +168,14 @@ class ClubSearch:
 
             clubs.extend(get_clubs_from_cell(first_cell))
 
+        self.ga_clubs = clubs
+
         return clubs
 
     def get_ecnl_clubs(self):
+        if self.ecnl_clubs is not None:
+            return self.ecnl_clubs
+
         url = "https://public.totalglobalsports.com/api/Event/get-org-club-list-by-orgID/9"
 
         response = requests.get(url)
@@ -189,6 +199,8 @@ class ClubSearch:
             club["name"] = club["name"].replace("  ", " ")
 
             clubs.append(club)
+
+        self.ecnl_clubs = clubs
 
         return clubs
 
@@ -541,6 +553,8 @@ CLUB_TRANSLATIONS = {
 # Could not find the club (San Jose Earthquakes)
 # Could not find the club (Fever United Football Club)
 
+search = ClubSearch()
+
 class TopDrawerSoccer:
     def __init__(self):
         """Constructor"""
@@ -554,6 +568,8 @@ class TopDrawerSoccer:
                     player['club'] = CLUB_TRANSLATIONS[club]
 
     def get_conference_commits(self, gender: str, division: str, name: str, year: int):
+        global search
+
         try:
             conference = self.get_conference(gender, division, name)
 
@@ -619,8 +635,6 @@ class TopDrawerSoccer:
 
                 # Sort the list of clubs
                 clubs.sort()
-
-                search = ClubSearch()
 
                 ecnl_clubs = search.get_ecnl_clubs()
                 ga_clubs = search.get_ga_clubs()
