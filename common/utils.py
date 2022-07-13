@@ -1,3 +1,4 @@
+import pprint
 import requests
 
 from bs4 import BeautifulSoup
@@ -132,6 +133,8 @@ def get_clubs_from_cell(cell):
     for item in items:
         anchor = item.find("a")
         club = { "name": anchor.text.strip(), "state": get_state_from_item(item), "conference": get_conference_name_from_cell(cell), "url": anchor["href"] }
+        club["name"] = club["name"].replace("  ", " ")
+
         clubs.append(club)
 
     return clubs
@@ -182,6 +185,8 @@ class ClubSearch:
             club["city"] = item["city"].strip()
             club["state"] = item["stateCode"].strip()
             club["logo"] = item["clubLogo"].strip()
+
+            club["name"] = club["name"].replace("  ", " ")
 
             clubs.append(club)
 
@@ -400,49 +405,242 @@ class PlayerSearch:
             players.extend(self.extract_players())
 
         return players
+
+def is_ecnl_club(target_club_name, ecnl_clubs):
+    if target_club_name is None:
+        return False
+
+    if ecnl_clubs is None:
+        return False
+
+    temp = target_club_name.strip().lower()
+
+    if len(temp) == 0:
+        return False
+
+    for club in ecnl_clubs:
+        current_club_name = club["name"].strip().lower()
+
+        if current_club_name == temp:
+            return True
+
+    return False
+
+def is_ga_club(target_club_name, ga_clubs):
+    if target_club_name is None:
+        return False
+
+    if ga_clubs is None:
+        return False
+
+    temp = target_club_name.strip().lower()
+
+    if len(temp) == 0:
+        return False
+
+    for club in ga_clubs:
+        current_club_name = club["name"].strip().lower()
+
+        if current_club_name == temp:
+            return True
+
+    return False
+
+def get_league(club_name, ecnl_clubs, ga_clubs):
+    if is_ecnl_club(club_name, ecnl_clubs):
+        return "ECNL"
+
+    if is_ga_club(club_name, ga_clubs):
+        return "GA"
+
+    print("Could not find the club (" + club_name + ")")
+
+    return None
+
+CLUB_TRANSLATIONS = {
+    'Albion Hurricanes FC (TX)': 'Albion Hurricanes FC',
+    'So Cal Blues': 'So Cal Blues SC',
+    'Houston Dash Youth Soccer': 'Houston Dynamo Dash Youth Soccer Club',
+    'Atlanta Fire United SA': 'Atlanta Fire United',
+    'Austin Sting': 'Sting Austin',
+    'Tampa Bay United Rowdies': 'Tampa Bay United',
+    'United Futbol Academy (GA)': 'United Futbol Academy',
+    'Sporting Blue Valley SC': 'Sporting Blue Valley',
+    'Kansas Rush': 'Kansas Rush Soccer Club',
+    'SUSA FC Academy': 'SUSA FC',
+    'Long Island SC': 'Long Island Soccer Club',
+    'FC Stars of Massachusetts': 'FC Stars Blue',
+    'Dallas Sting': 'Sting Dallas Black',
+    'Lonestar SC': 'Lonestar SC Academy',
+    'North Carolina FC Youth': 'NCFC Youth',
+    'South Shore Select SC': 'South Shore Select',
+    'Wilmington Hammerheads FC': 'Wilmington Hammerheads Youth FC',
+    'Wilimington Hammerheads Youth Football Club': 'Wilmington Hammerheads Youth FC',
+    'Scorpions SC': 'Scorpions Soccer',
+    'Tophat SC': 'Tophat Gold',
+    'San Diego Surf': 'San Diego Surf Soccer Club',
+    'Orlando City': 'Orlando City Youth Soccer',
+    'Eclipse Select (IL)': 'Eclipse Select SC',
+    'Nationals': 'Nationals-Blue',
+    'Internationals SC (OH)': 'Internationals SC',
+    'Concorde Fire SC': 'Concorde Fire Platinum',
+    'FC United (IL)': 'Chicago FC United',
+    'Tennessee SC': 'Tennessee Soccer Club',
+    'Seattle Reign Academy': 'OL Reign Academy',
+    "D'Feeters SC": "DKSC",
+    'Crossfire Premier SC': 'Crossfire Premier',
+    'Charlotte Soccer Academy': 'Charlotte SA',
+    'MN Eclipse': 'Minnesota Eclipse',
+    'Utah Royals FC - AZ': 'Utah Royals FC',
+    'Cedar Stars Academy': 'Cedar Stars Academy Monmouth',
+    'Arlington SA': 'Arlington Soccer',
+    'Weston FC/Florida United SC': 'Florida United',
+    'Oakwood SC': 'Oakwood Soccer Club'
+}
+
+# Could not find the club (FC Fury NY)
+# Could not find the club (Georgia Rush)
+# Could not find the club (Libertyville FC)
+# Could not find the club (San Jose Earthquakes)
+# Could not find the club (Washington Spirit Academy MD)
+# Could not find the club (CCV Stars)
+# Could not find the club (Crossfire Premier SC)
+# Could not find the club (Excel Soccer Academy)
+# Could not find the club (Arizona Arsenal)
+# Could not find the club (California Thorns FC)
+# Could not find the club (Cincinnati Development Academy)
+# Could not find the club (New Jersey Stallions Academy)
+# Could not find the club (Sporting Columbus)
+# Could not find the club (St. Louis Scott Gallagher)
+# Could not find the club (Team Chicago)
+# Could not find the club (Tudela Football Club)
+# Could not find the club (Cleveland Soccer Academy)
+# Could not find the club (Las Vegas Premier)
+# Could not find the club (Sockers FC)
+# Could not find the club (Sporting Arsenal FC (CA))
+# Could not find the club (Blues Youth SC (fka Corona United))
+# Could not find the club (Bozeman Blitzz)
+# Could not find the club (California Thorns FC)
+# Could not find the club (Strikers FC)
+# Could not find the club (West Coast Football Club)
+# Could not find the club (California Thorns FC)
+# Could not find the club (LA Galaxy)
+# Could not find the club (Los Angeles Premier FC)
+# Could not find the club (Mtn. View Los Altos SC)
+# Could not find the club (Northwest Elite)
+# Could not find the club (Placer United SC)
+# Could not find the club (NYCFC)
+# Could not find the club (Real Salt Lake (AZ))
+# Could not find the club (Soccer Vision Academy)
+# Could not find the club (Bavarian SC)
+# Could not find the club (Cincinnati Development Academy)
+# Could not find the club (Jackson FC)
+# Could not find the club (Shattuck St. Mary's Academy)
+# Could not find the club (Sockers FC)
+# Could not find the club (St. Louis Scott Gallagher)
+# Could not find the club (San Jose Earthquakes)
+# Could not find the club (Fever United Football Club)
+
 class TopDrawerSoccer:
     def __init__(self):
         """Constructor"""
         pass
 
+    def apply_club_translations(self, schools):
+        for school in schools:
+            for player in school['players']:
+                club = player['club']
+                if club in CLUB_TRANSLATIONS:
+                    player['club'] = CLUB_TRANSLATIONS[club]
+
     def get_conference_commits(self, gender: str, division: str, name: str, year: int):
-        conference = self.get_conference(gender, division, name)
+        try:
+            conference = self.get_conference(gender, division, name)
 
-        url = conference['url'] + "/tab-commitments#commitments"
+            url = conference['url'] + "/tab-commitments#commitments"
 
-        page = requests.get(url)
+            page = requests.get(url)
 
-        soup = BeautifulSoup(page.content, "html.parser")
+            soup = BeautifulSoup(page.content, "html.parser")
 
-        tables = soup.find_all("table", class_=["table-striped", "tds-table", "female"])
+            tables = soup.find_all("table", class_=["table-striped", "tds-table", "female"])
 
-        body = None
-        for table in tables:
-            header = table.find("thead", class_="female")
-            if header is not None:
-                body = table.find("tbody")
+            body = None
+            for table in tables:
+                header = table.find("thead", class_="female")
+                if header is not None:
+                    body = table.find("tbody")
 
-        schools = []
-        if body is not None:
-            rows = body.find_all("tr")
+            schools = []
+            if body is not None:
+                rows = body.find_all("tr")
 
-            for row in rows:
-                columns = row.find_all("td")
-                if len(columns) == 1:
-                    name = columns[0].text.strip()
-                    school = { "name": name, "players": [] }
-                    schools.append(school)
-                else:
-                    player = { "name": None, "year": None, "position": None, "city": None, "state": None, "club": None }
-                    player["name"] = columns[0].text.strip()
-                    player["year"] = columns[1].text.strip()
-                    player["position"] = columns[2].text.strip()
-                    player["city"] = columns[3].text.strip()
-                    player["state"] = columns[4].text.strip()
-                    player["club"] = columns[5].text.strip()
+                for row in rows:
+                    columns = row.find_all("td")
+                    if len(columns) == 1:
+                        name = columns[0].text.strip()
+                        school = { "name": name, "players": [] }
+                        schools.append(school)
+                    else:
+                        player = { "name": None, "year": None, "position": None, "city": None, "state": None, "club": None }
+                        player["name"] = columns[0].text.strip()
+                        player["year"] = columns[1].text.strip()
+                        player["position"] = columns[2].text.strip()
+                        player["city"] = columns[3].text.strip()
+                        player["state"] = columns[4].text.strip()
+                        player["club"] = columns[5].text.strip()
 
-                    if int(player["year"]) == year:
-                        school["players"].append(player)
+                        # Replace multiple spaces in the club name
+                        while "  " in player["club"]:
+                            player["club"].replace("  ", " ")
+
+                        if int(player["year"]) == year:
+                            school["players"].append(player)
+
+                self.apply_club_translations(schools)
+
+                # Collect a unique list of clubs
+                clubs = []
+                for school in schools:
+                    for player in school["players"]:
+                        current_club = player["club"]
+
+                        if current_club is None:
+                            continue
+
+                        current_club = current_club.strip()
+                        if len(current_club) == 0:
+                            continue
+
+                        if current_club in clubs:
+                            continue
+
+                        clubs.append(current_club)
+
+                # Sort the list of clubs
+                clubs.sort()
+
+                search = ClubSearch()
+
+                ecnl_clubs = search.get_ecnl_clubs()
+                ga_clubs = search.get_ga_clubs()
+
+                mapping = {}
+                for club_name in clubs:
+                    mapping[club_name] = get_league(club_name, ecnl_clubs, ga_clubs)
+
+                pprint.pprint(mapping)
+
+                for school in schools:
+                    for player in school["players"]:
+                        club = player["club"]
+
+                        if club is None or len(club) == 0:
+                            player["league"] = "Unknown"
+                        else:
+                            player["league"] = mapping[club]
+        except Exception as err:
+            print(err)
 
         return schools
 

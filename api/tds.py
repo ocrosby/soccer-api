@@ -37,6 +37,7 @@ player_model = ns.model(
         "city": fields.String(required=True, description="The players home city"),
         "state": fields.String(required=True, description="The players home state"),
         "club": fields.String(required=True, description="The players club"),
+        "league": fields.String(required=False, description="The players league")
     },
 )
 
@@ -67,7 +68,7 @@ conference_model = ns.model(
 
 # /college/conference/details/<name:string>
 
-tgs = utils.TopDrawerSoccer()
+tds = utils.TopDrawerSoccer()
 
 gender_parser = reqparse.RequestParser()
 gender_parser.add_argument("gender", type=str, choices=("male", "female"))
@@ -130,6 +131,7 @@ player_model = ns.model(
             required=True, description="The position of the player"
         ),
         "club": fields.String(required=True, description="The club of the player"),
+        "league": fields.String(required=False, description="The league of the player"),
         "high_school": fields.String(
             required=True, description="The players high school"
         ),
@@ -311,7 +313,7 @@ class ClubList(Resource):
     def get(self, gender: str, division: str):
         """List all conferences"""
         try:
-            return tgs.get_conferences(gender, division)
+            return tds.get_conferences(gender, division)
         except HTTPError as http_err:
             return ns.abort(
                 HTTPStatus.BAD_REQUEST.value, f"HTTP error occurred: {http_err}"
@@ -334,7 +336,7 @@ class Conference(Resource):
     def get(self, gender: str, division: str, name: str):
         """Get a conference by name"""
         try:
-            conference = tgs.get_conference(gender, division, name)
+            conference = tds.get_conference(gender, division, name)
 
             return conference
         except HTTPError as http_err:
@@ -381,14 +383,14 @@ commits_parser.add_argument(
 # @ns.param('name', 'The name of the target conference')
 # @ns.param('year', 'The graduation year of the commits')
 class ConferenceCommits(Resource):
-    @ns.doc("get_conference")
-    @ns.response(HTTPStatus.OK.value, "Get the conference", conference_model)
-    @ns.response(HTTPStatus.BAD_REQUEST.value, "Conference not found")
+    @ns.doc("get_conference_commits")
+    @ns.response(HTTPStatus.OK.value, "Get the conference commits", conference_model)
+    @ns.response(HTTPStatus.BAD_REQUEST.value, "Commitments not found")
     @ns.marshal_list_with(school_model)
     def get(self, gender: str, division: str, name: str, year: int):
         """Get a conferences commitments"""
         try:
-            schools = tgs.get_conference_commits(gender, division, name, year)
+            schools = tds.get_conference_commits(gender, division, name, year)
 
             return schools
         except HTTPError as http_err:
