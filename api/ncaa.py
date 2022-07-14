@@ -5,6 +5,8 @@ from bs4 import BeautifulSoup
 from flask_restx import Namespace, Resource, fields
 from requests.exceptions import HTTPError
 
+from common.extensions import cache
+
 ns = Namespace("ncaa", description="NCAA related operations")
 
 ncaa_coaches_di_ranking_model = ns.model(
@@ -63,6 +65,7 @@ class NCAAUnitedSoccerCoachesD2RankingList(Resource):
     )
     @ns.response(HTTPStatus.BAD_REQUEST.value, "Item not found")
     @ns.marshal_list_with(ncaa_coaches_dii_ranking_model)
+    @cache.cached(timeout=604800, key_prefix='list_ncaa_coaches_dii_rankings')
     def get(self):
         """List all United Soccer Coaches DII rankings"""
 
@@ -115,6 +118,7 @@ class NCAAUnitedSoccerCoachesD1RankingList(Resource):
     )
     @ns.response(HTTPStatus.BAD_REQUEST.value, "Item not found")
     @ns.marshal_list_with(ncaa_coaches_di_ranking_model)
+    @cache.cached(timeout=604800, key_prefix='list_ncaa_coaches_di_rankings')
     def get(self):
         """List all United Soccer Coaches DI rankings"""
 
@@ -164,6 +168,7 @@ class NCAARPIRankingList(Resource):
     )
     @ns.response(HTTPStatus.BAD_REQUEST.value, "Item not found")
     @ns.marshal_list_with(ncaa_rpi_ranking_model)
+    @cache.cached(timeout=604800, key_prefix='list_ncaa_rpi_rankings')
     def get(self):
         """List all RPI rankings"""
 
