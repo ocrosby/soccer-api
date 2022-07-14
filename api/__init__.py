@@ -3,6 +3,7 @@ from flask_caching import Cache
 from flask_cors import CORS
 from flask_healthz import healthz
 from flask_restx import Api
+from common.extensions import cache
 
 from .ecnl import ns as ecnl
 from .ncaa import ns as ncaa
@@ -35,7 +36,7 @@ app = Flask(__name__)
 
 # tell Flask to use the above defined config
 app.config.from_mapping(config)
-cache = Cache(app)
+cache.init_app(app, config)
 
 app.register_blueprint(blueprint)
 app.register_blueprint(healthz, url_prefix="/healthz")

@@ -490,6 +490,7 @@ CLUB_TRANSLATIONS = {
     'Wilimington Hammerheads Youth Football Club': 'Wilmington Hammerheads Youth FC',
     'Scorpions SC': 'Scorpions Soccer',
     'Tophat SC': 'Tophat Gold',
+    'NTH Nasa': 'Tophat Gold',
     'San Diego Surf': 'San Diego Surf Soccer Club',
     'Orlando City': 'Orlando City Youth Soccer',
     'Eclipse Select (IL)': 'Eclipse Select SC',
@@ -516,7 +517,6 @@ CLUB_TRANSLATIONS = {
 # Could not find the club (San Jose Earthquakes)
 # Could not find the club (Washington Spirit Academy MD)
 # Could not find the club (CCV Stars)
-# Could not find the club (Crossfire Premier SC)
 # Could not find the club (Excel Soccer Academy)
 # Could not find the club (Arizona Arsenal)
 # Could not find the club (California Thorns FC)

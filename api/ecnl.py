@@ -4,6 +4,7 @@ import requests
 from flask_restx import Namespace, Resource, fields
 from requests.exceptions import HTTPError
 from common import utils
+from common.extensions import cache
 
 ns = Namespace("ecnl", description="ECNL related operations")
 
@@ -29,6 +30,7 @@ class ClubList(Resource):
     @ns.response(HTTPStatus.OK.value, "Get the item list", [club_model])
     @ns.response(HTTPStatus.BAD_REQUEST.value, "Item not found")
     @ns.marshal_list_with(club_model)
+    @cache.cached(timeout=604800)
     def get(self):
         """List all clubs"""
         global search

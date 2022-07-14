@@ -75,7 +75,7 @@ class ConferenceList(Resource):
 
                 first_cell = cells[0]
 
-                conference_name = get_conference_name_from_cell(first_cell)
+                conference_name = utils.get_conference_name_from_cell(first_cell)
                 conference = { "name": conference_name }
 
                 conferences.append(conference)

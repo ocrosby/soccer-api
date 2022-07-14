@@ -4,6 +4,7 @@ from flask_restx import Namespace, Resource, fields, reqparse
 from requests.exceptions import HTTPError
 
 from common import utils
+from common.extensions import cache
 
 ns = Namespace("tds", description="TopDrawerSoccer related operations")
 
@@ -91,6 +92,7 @@ class CollegeOrganizations(Resource):
     @ns.response(HTTPStatus.OK.value, "Get the organization list", [conference_model])
     @ns.response(HTTPStatus.BAD_REQUEST.value, "Item not found")
     @ns.marshal_list_with(college_organization_model)
+    @cache.cached(timeout=604800, key_prefix='list_college_organizations')
     def get(self):
         """List all college organizations"""
         return COLLEGE_ORGANIZATIONS
@@ -111,6 +113,7 @@ class CollegeDivisions(Resource):
     @ns.response(HTTPStatus.OK.value, "Get the division list", [conference_model])
     @ns.response(HTTPStatus.BAD_REQUEST.value, "Item not found")
     @ns.marshal_list_with(college_division_model)
+    @cache.cached(timeout=604800, key_prefix='list_college_divisions')
     def get(self):
         """List all college divisions"""
         return COLLEGE_DIVISIONS
@@ -305,11 +308,12 @@ conferences_parser.add_argument(
 
 @ns.route("/college/conferences/<string:gender>/<string:division>")
 @ns.expect(conferences_parser)
-class ClubList(Resource):
+class ConferenceList(Resource):
     @ns.doc("list_conferences")
     @ns.response(HTTPStatus.OK.value, "Get the item list", [conference_model])
     @ns.response(HTTPStatus.BAD_REQUEST.value, "Item not found")
     @ns.marshal_list_with(conference_model)
+    @cache.memoize(timeout=604800)
     def get(self, gender: str, division: str):
         """List all conferences"""
         try:
@@ -333,6 +337,7 @@ class Conference(Resource):
     @ns.response(HTTPStatus.OK.value, "Get the conference", conference_model)
     @ns.response(HTTPStatus.BAD_REQUEST.value, "Conference not found")
     @ns.marshal_with(conference_model)
+    @cache.memoize(timeout=604800)
     def get(self, gender: str, division: str, name: str):
         """Get a conference by name"""
         try:
@@ -387,6 +392,7 @@ class ConferenceCommits(Resource):
     @ns.response(HTTPStatus.OK.value, "Get the conference commits", conference_model)
     @ns.response(HTTPStatus.BAD_REQUEST.value, "Commitments not found")
     @ns.marshal_list_with(school_model)
+    @cache.memoize(timeout=604800)
     def get(self, gender: str, division: str, name: str, year: int):
         """Get a conferences commitments"""
         try:
