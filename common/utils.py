@@ -731,7 +731,7 @@ class PlayerSearch:
         return "0"
 
     def get_grad_year(self, args):
-        grad_year = args["grad_year"]
+        grad_year = args["gradyear"]
 
         if grad_year is None:
             return ""

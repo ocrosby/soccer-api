@@ -1,5 +1,7 @@
 from http import HTTPStatus
 
+import flask
+\
 from flask_restx import Namespace, Resource, fields, reqparse
 from requests.exceptions import HTTPError
 
@@ -152,26 +154,28 @@ player_model = ns.model(
     },
 )
 
-players_parser = ns.parser()
+players_parser = reqparse.RequestParser(bundle_errors=True)
 players_parser.add_argument("name", type=str, location="form")
 players_parser.add_argument(
     "position",
     type=str,
-    location="form",
+    location="json",
     choices=("All", "Goalkeeper", "Defender", "Midfielder", "Forward"),
     default="All",
+    help='Bad choice: {error_msg}'
 )
 players_parser.add_argument(
-    "grad_year",
+    "gradyear",
     type=str,
-    location="form",
+    location="json",
     choices=("2023", "2024", "2025", "2026"),
     default="2023",
+    help='Bad choice: {error_msg}'
 )
 players_parser.add_argument(
     "region",
     type=str,
-    location="form",
+    location="json",
     choices=(
         "All",
         "Florida",
@@ -193,11 +197,12 @@ players_parser.add_argument(
         "Texas",
     ),
     default="All",
+    help='Bad choice: {error_msg}'
 )
 players_parser.add_argument(
     "state",
     type=str,
-    location="form",
+    location="json",
     choices=(
         "All",
         "Alabama",
@@ -253,13 +258,15 @@ players_parser.add_argument(
         "Wyoming",
     ),
     default="All",
+    help='Bad choice: {error_msg}'
 )
 players_parser.add_argument(
     "gender",
     type=str,
-    location="form",
+    location="json",
     choices=("All", "Male", "Female"),
     default="All",
+    help='Bad choice: {error_msg}'
 )
 
 
@@ -275,15 +282,19 @@ class PlayerSearch(Resource):
         try:
             args = players_parser.parse_args()
 
+            print(args)
+
             player_search = utils.PlayerSearch()
             players = player_search.get_players(args)
 
             return players
         except HTTPError as http_err:
+            print(f"HTTP error occurred: {http_err}")
             return ns.abort(
                 HTTPStatus.BAD_REQUEST.value, f"HTTP error occurred: {http_err}"
             )
         except Exception as err:
+            print(f"Other error occurred: {err}")
             return ns.abort(
                 HTTPStatus.BAD_REQUEST.value, f"Other error occurred: {err}"
             )
