@@ -1,7 +1,8 @@
 from http import HTTPStatus
 
 import flask
-\
+
+from pprint import pprint
 from flask_restx import Namespace, Resource, fields, reqparse
 from requests.exceptions import HTTPError
 
@@ -168,7 +169,7 @@ players_parser.add_argument(
     "gradyear",
     type=str,
     location="json",
-    choices=("2023", "2024", "2025", "2026"),
+    choices=("2022", "2023", "2024", "2025", "2026"),
     default="2023",
     help='Bad choice: {error_msg}'
 )
@@ -294,6 +295,7 @@ class PlayerSearch(Resource):
                 HTTPStatus.BAD_REQUEST.value, f"HTTP error occurred: {http_err}"
             )
         except Exception as err:
+            pprint(err.data["errors"])
             print(f"Other error occurred: {err}")
             return ns.abort(
                 HTTPStatus.BAD_REQUEST.value, f"Other error occurred: {err}"

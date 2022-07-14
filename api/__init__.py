@@ -41,4 +41,4 @@ cache.init_app(app, config)
 app.register_blueprint(blueprint)
 app.register_blueprint(healthz, url_prefix="/healthz")
 
-CORS(app)
+cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
