@@ -1010,7 +1010,8 @@ CLUB_TRANSLATIONS = {
     'Cedar Stars Academy': 'Cedar Stars Academy Monmouth',
     'Arlington SA': 'Arlington Soccer',
     'Weston FC/Florida United SC': 'Florida United',
-    'Oakwood SC': 'Oakwood Soccer Club'
+    'Oakwood SC': 'Oakwood Soccer Club',
+    'St. Louis Scott Gallagher': 'SLSG IL'
 }
 
 # Could not find the club (FC Fury NY)
@@ -1025,7 +1026,6 @@ CLUB_TRANSLATIONS = {
 # Could not find the club (Cincinnati Development Academy)
 # Could not find the club (New Jersey Stallions Academy)
 # Could not find the club (Sporting Columbus)
-# Could not find the club (St. Louis Scott Gallagher)
 # Could not find the club (Team Chicago)
 # Could not find the club (Tudela Football Club)
 # Could not find the club (Cleveland Soccer Academy)
@@ -1051,7 +1051,6 @@ CLUB_TRANSLATIONS = {
 # Could not find the club (Jackson FC)
 # Could not find the club (Shattuck St. Mary's Academy)
 # Could not find the club (Sockers FC)
-# Could not find the club (St. Louis Scott Gallagher)
 # Could not find the club (San Jose Earthquakes)
 # Could not find the club (Fever United Football Club)
 
