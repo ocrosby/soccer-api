@@ -37,28 +37,28 @@ team_model = ns.model(
     "Team Model",
     {
         "abbreviation": fields.String(required=True, description="The team abbreviation"),
-        #"athletics_website": fields.String(required=True, description="The team website"),
-        #"banner_image": fields.Nested(image_model),
-        #"contestant_id": fields.String(required=True, description="The team contestant identifier"),
-        #"current_record": fields.String(required=True, description="The record of the team"),
-        #"edu_website": fields.String(required=True, description="The website for their junk"),
-        #"facebook_id": fields.String(required=True, description="The facebook id for the team"),
-        #"facebook_page": fields.String(required=True, description="The facebook page for the team"),
-        #"facebook_username": fields.String(required=True, description="The facebook username for the team"),
-        #"gallery_id": fields.String(required=True, description="The teams gallery identifier"),
+        # "athletics_website": fields.String(required=True, description="The team website"),
+        # "banner_image": fields.Nested(image_model),
+        # "contestant_id": fields.String(required=True, description="The team contestant identifier"),
+        # "current_record": fields.String(required=True, description="The record of the team"),
+        # "edu_website": fields.String(required=True, description="The website for their junk"),
+        # "facebook_id": fields.String(required=True, description="The facebook id for the team"),
+        # "facebook_page": fields.String(required=True, description="The facebook page for the team"),
+        # "facebook_username": fields.String(required=True, description="The facebook username for the team"),
+        # "gallery_id": fields.String(required=True, description="The teams gallery identifier"),
         "head_coach": fields.String(required=True, description="The head coach for the team"),
         "home_field": fields.String(required=True, description="The home field for the team"),
         "id": fields.String(required=True, description="The teams identifier"),
-        #"image": fields.Nested(image_model),
-        #"impact_image": fields.Nested(image_model),
-        #"instagram_username": fields.String(required=True, description="The instagram username for the team"),
+        # "image": fields.Nested(image_model),
+        # "impact_image": fields.Nested(image_model),
+        # "instagram_username": fields.String(required=True, description="The instagram username for the team"),
         "is_hidden": fields.Boolean(required=True, description="Is the team hidden"),
-        #"lineup": fields.String(required=True, description="The lineup for the team"),
-        #"links": fields.String(required=True, description="The links for the team"),
+        # "lineup": fields.String(required=True, description="The lineup for the team"),
+        # "links": fields.String(required=True, description="The links for the team"),
         "location": fields.String(required=True, description="The location of the team"),
-        #"logo": fields.Nested(image_model),
-        #"mascot": fields.String(required=True, description="The mascot for the team"),
-        #"member_type": fields.String(required=True, description="The member type of the team"),
+        # "logo": fields.Nested(image_model),
+        # "mascot": fields.String(required=True, description="The mascot for the team"),
+        # "member_type": fields.String(required=True, description="The member type of the team"),
         # next_game: {date: "2022-07-16T20:30:00", opponent_id: "dzxypx8djih58p668surbi4qm",…}
         # primary_background: "#000"
         # primary_text: "#fff"
@@ -67,20 +67,19 @@ team_model = ns.model(
         # safe_text_white: "#000"
         # schedule_display: "Houston Dash"
         # school_active: true
-        #"shop_url": fields.String(required=True, description="The shopping URL for the team"),
+        # "shop_url": fields.String(required=True, description="The shopping URL for the team"),
         "short_display": fields.String(required=True, description="The short display name for the team"),
         "shortname": fields.String(required=True, description="The short name of the team"),
         "slug": fields.String(required=True, description="The slug of the team"),
-        #"snapchat_username": fields.String(required=True, description="The snapchat username for the team"),
+        # "snapchat_username": fields.String(required=True, description="The snapchat username for the team"),
         # stats: null
-        #"team_history": fields.List(fields.Nested(team_history_model)),
-        #"title": fields.String(required=True, description="The title of the team"),
-        #"twitter_username": fields.String(required=True, description="The Twitter username for the team"),
+        # "team_history": fields.List(fields.Nested(team_history_model)),
+        # "title": fields.String(required=True, description="The title of the team"),
+        # "twitter_username": fields.String(required=True, description="The Twitter username for the team"),
         "website_url": fields.String(required=True, description="The teams website URL"),
-        #"youtube_username": fields.String(required=True, description="The YouTube username for the team"),
+        # "youtube_username": fields.String(required=True, description="The YouTube username for the team"),
     }
 )
-
 
 
 player_model = ns.model(
@@ -100,6 +99,61 @@ player_model = ns.model(
         "team": fields.Nested(team_model)
     }
 )
+
+standing_model = ns.model(
+    "NWSL Standing",
+    {
+        "awayMatchesDrawn": fields.Integer(required=True, description="Number of away matches drawn"),
+        "awayMatchesLost": fields.Integer(required=True, description="Number of away matches lost"),
+        "awayMatchesPlayed": fields.Integer(required=True, description="Number of away matches played"),
+        "awayMatchesWon": fields.Integer(required=True, description="Number of away matches won"),
+        "division": fields.String(required=True, description="Division"),
+        "goalDifference": fields.Integer(required=True, description="Goal difference"),
+        "goalsAgainst": fields.Integer(required=True, description="Goals against"),
+        "goalsFor": fields.Integer(required=True, description="Goals for"),
+        "homeMatchesDrawn": fields.Integer(required=True, description="Home matches drawn"),
+        "homeMatchesLost": fields.Integer(required=True, description="Home matches lost"),
+        "homeMatchesPlayed": fields.Integer(required=True, description="Home matches played"),
+        "homeMatchesWon": fields.Integer(required=True, description="Home matches won"),
+        "lastSix": fields.String(required=True, description="Last six"),
+        "points": fields.Integer(required=True, description="Points"),
+        "rank": fields.Integer(required=True, description="The team rank"),
+        "team": fields.Nested(team_model),
+        "totalMatchesDrawn": fields.Integer(required=True, description="Total matches drawn"),
+        "totalMatchesLost": fields.Integer(required=True, description="Total matches lost"),
+        "totalMatchesPlayed": fields.Integer(required=True, description="Total matches played"),
+        "totalMatchesWon": fields.Integer(required=True, description="Total matches won")
+    }
+)
+
+
+@ns.route("/standings")
+class Standings(Resource):
+    @ns.doc("standings")
+    @ns.response(HTTPStatus.OK.value, "Get the NWSL player list", [player_model])
+    @ns.response(HTTPStatus.BAD_REQUEST.value, "Item not found")
+    @ns.marshal_list_with(standing_model)
+    def get(self):
+        """Get NWSL Standings"""
+
+        url = "https://d2nkt8hgeld8zj.cloudfront.net/services/nwsl.ashx/standings"
+
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+
+            json = response.json()
+
+            return json["data"]["divisions"][0]["rankings"]
+        except HTTPError as http_err:
+            return ns.abort(
+                HTTPStatus.BAD_REQUEST.value, f"HTTP error occurred: {http_err}"
+            )
+        except Exception as err:
+            return ns.abort(
+                HTTPStatus.BAD_REQUEST.value, f"Other error occurred: {err}"
+            )
+
 
 @ns.route("/players")
 class ClubList(Resource):
