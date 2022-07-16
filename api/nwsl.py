@@ -5,6 +5,7 @@ from flask_restx import Namespace, Resource, fields
 from requests.exceptions import HTTPError
 from common import utils
 from common.extensions import cache
+from pprint import pprint
 
 ns = Namespace("nwsl", description="NWSL related operations")
 
@@ -118,7 +119,13 @@ class ClubList(Resource):
 
             json = response.json()
 
-            return json["data"]
+            results = []
+
+            for record in json["data"]:
+                if record['team'] is not None:
+                    results.append(record)
+
+            return results
         except HTTPError as http_err:
             return ns.abort(
                 HTTPStatus.BAD_REQUEST.value, f"HTTP error occurred: {http_err}"
