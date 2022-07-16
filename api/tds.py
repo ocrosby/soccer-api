@@ -156,7 +156,7 @@ player_model = ns.model(
 )
 
 players_parser = reqparse.RequestParser(bundle_errors=True)
-players_parser.add_argument("name", type=str, location="form")
+players_parser.add_argument("name", type=str, location="json")
 players_parser.add_argument(
     "position",
     type=str,

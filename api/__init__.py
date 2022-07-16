@@ -10,6 +10,7 @@ from .ncaa import ns as ncaa
 from .tds import ns as tds
 from .ga import ns as ga
 from .club import ns as club
+from .nwsl import ns as nwsl
 
 blueprint = Blueprint("api", __name__, url_prefix="/api")
 
@@ -25,6 +26,7 @@ api.add_namespace(tds, path="/tds")
 api.add_namespace(ncaa, path="/ncaa")
 api.add_namespace(ga, path="/ga")
 api.add_namespace(club, path="/club")
+api.add_namespace(nwsl, path="/nwsl")
 
 config = {
     "DEBUG": True,          # some Flask specific configs

@@ -10,6 +10,7 @@
       "NAIA",
       "NCAARPI",
       "NJCAA",
+      "nwsl",
       "pylint",
       "pytest",
       "reqparse",
