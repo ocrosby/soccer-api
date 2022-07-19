@@ -152,7 +152,7 @@ class ClubSearch:
         self.ga_clubs = None
         self.ecnl_clubs = None
 
-    @cache.cached(timeout=604800)
+    # @cache.cached(timeout=604800)
     def get_ga_clubs(self):
         return [
             {
@@ -936,7 +936,7 @@ def is_ecnl_club(target_club_name, ecnl_clubs):
     return False
 
 
-@cache.memoize(timeout=604800)
+# @cache.memoize(timeout=604800)
 def is_ga_club(target_club_name, ga_clubs):
     if target_club_name is None:
         return False
