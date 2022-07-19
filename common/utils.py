@@ -1157,7 +1157,12 @@ class TopDrawerSoccer:
                         if club is None or len(club) == 0:
                             player["league"] = "Other"
                         else:
-                            player["league"] = mapping[club]
+                            if club in mapping:
+                                player["league"] = mapping[club]
+
+                        if player["league"] is None:
+                            player["league"] = "Other"
+
         except Exception as err:
             print(err)
 
