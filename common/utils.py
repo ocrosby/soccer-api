@@ -1060,7 +1060,7 @@ search = ClubSearch()
 class TopDrawerSoccer:
     def __init__(self):
         """Constructor"""
-        pass
+        self.prefix = "https://www.topdrawersoccer.com"
 
     def apply_club_translations(self, schools):
         for school in schools:
@@ -1068,6 +1068,65 @@ class TopDrawerSoccer:
                 club = player['club']
                 if club in CLUB_TRANSLATIONS:
                     player['club'] = CLUB_TRANSLATIONS[club]
+
+    def expand_player_details(self, player):
+        # Initialize the new properties.
+        player["club"] = None
+        player["team"] = None
+        player["jerseyNumber"] = None
+        player["highSchool"] = None
+        player["region"] = None
+
+        if player is None:
+            return
+
+        if "url" not in player:
+            return
+
+        print("Making an additional request for " + player["name"] + ".")
+        response = requests.get(player["url"])
+
+        soup = BeautifulSoup(response.content, "html.parser")
+
+
+        search = PlayerSearch()
+        player["rating"] = search.extract_rating(soup)
+
+        position_element = soup.find("div", class_=["player-position"])
+        buffer = position_element.text.strip()
+        items = buffer.split("-")
+        position = items[0].strip()
+
+        commitment_anchor = position_element.find('a')
+        if commitment_anchor is not None:
+            player["commitment"] = commitment_anchor.text.strip()
+            player["commitmentUrl"] = self.prefix + commitment_anchor["href"]
+
+        if len(position) > 0:
+            player["position"] = position
+
+        container = soup.find("ul", class_=["profile_grid"])
+        items = container.findChildren('li')
+
+        for item in items:
+            (lvalue, rvalue) = item.text.strip().split(':')
+
+            lvalue = lvalue.strip()
+            rvalue = rvalue.strip()
+
+            if lvalue == "Club":
+                player["club"] = rvalue
+            elif lvalue == "Team Name":
+                player["team"] = rvalue
+            elif lvalue == "Jersey Number":
+                player["jerseyNumber"] = rvalue
+            elif lvalue == "High School":
+                player["highSchool"] = rvalue
+            elif lvalue == "Region":
+                player["region"] = rvalue
+            else:
+                print("Unknown lvalue " + lvalue + " on player detail page " + player["url"] + ".")
+
 
     @cache.memoize(timeout=604800)
     def get_conference_commits(self, gender: str, division: str, name: str, year: int):
@@ -1105,11 +1164,14 @@ class TopDrawerSoccer:
                         player = {"name": None, "year": None, "position": None,
                                   "city": None, "state": None, "club": None}
                         player["name"] = columns[0].text.strip()
+                        player["url"] = self.prefix + columns[0].find('a')['href']
                         player["year"] = columns[1].text.strip()
                         player["position"] = columns[2].text.strip()
                         player["city"] = columns[3].text.strip()
                         player["state"] = columns[4].text.strip()
                         player["club"] = columns[5].text.strip()
+
+                        self.expand_player_details(player)
 
                         # Replace multiple spaces in the club name
                         while "  " in player["club"]:

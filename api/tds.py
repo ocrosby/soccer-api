@@ -36,12 +36,20 @@ player_model = ns.model(
     "Player",
     {
         "name": fields.String(required=True, description="The player name"),
+        "url": fields.String(required=True, description="The players TopDrawerSoccer URL"),
         "year": fields.String(required=True, description="The players graduation year"),
         "position": fields.String(required=True, description="The players position"),
         "city": fields.String(required=True, description="The players home city"),
         "state": fields.String(required=True, description="The players home state"),
         "club": fields.String(required=True, description="The players club"),
-        "league": fields.String(required=False, description="The players league")
+        "team": fields.String(required=True, description="The players team"),
+        "jerseyNumber": fields.String(required=True, description="The players jersey number"),
+        "highSchool": fields.String(required=True, description="The players high school"),
+        "region": fields.String(required=True, description="The players region"),
+        "rating": fields.String(required=True, description="The players rating"),
+        "league": fields.String(required=False, description="The players league"),
+        "commitment": fields.String(required=False, description="The players commitment"),
+        "commitmentUrl": fields.String(required=False, description="The players commitment URL")
     },
 )
 
@@ -130,7 +138,7 @@ player_model = ns.model(
         ),
         "name": fields.String(required=True, description="The name of the player"),
         "url": fields.String(required=True, description="The URL of the player"),
-        "image_url": fields.String(
+        "imageUrl": fields.String(
             required=True, description="The URL of the players image"
         ),
         "position": fields.String(
@@ -138,7 +146,7 @@ player_model = ns.model(
         ),
         "club": fields.String(required=True, description="The club of the player"),
         "league": fields.String(required=False, description="The league of the player"),
-        "high_school": fields.String(
+        "highSchool": fields.String(
             required=True, description="The players high school"
         ),
         "rating": fields.String(required=False, description="The rating of the player"),
@@ -149,7 +157,7 @@ player_model = ns.model(
         "commitment": fields.String(
             required=False, description="The players commitment"
         ),
-        "commitment_url": fields.String(
+        "commitmentUrl": fields.String(
             required=False, description="The committed schools URL"
         ),
     },
