@@ -1083,7 +1083,7 @@ class TopDrawerSoccer:
         if "url" not in player:
             return
 
-        print("Making an additional request for " + player["name"] + ".")
+        # print("Making an additional request for " + player["name"] + ".")
         response = requests.get(player["url"])
 
         soup = BeautifulSoup(response.content, "html.parser")
@@ -1210,7 +1210,7 @@ class TopDrawerSoccer:
                 for club_name in clubs:
                     mapping[club_name] = get_league(club_name, ecnl_clubs, ga_clubs)
 
-                pprint.pprint(mapping)
+                # pprint.pprint(mapping)
 
                 for school in schools:
                     for player in school["players"]:
