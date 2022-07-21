@@ -299,6 +299,7 @@ class TransferTracker(Resource):
     @ns.response(HTTPStatus.OK.value, "Search for transfers", [transfer_model])
     @ns.response(HTTPStatus.BAD_REQUEST.value, "Item not found")
     @ns.marshal_list_with(transfer_model)
+    @cache.cached(timeout=3600) # cache for 1 hour
     def get(self):
         """Get the transfers"""
         try:
