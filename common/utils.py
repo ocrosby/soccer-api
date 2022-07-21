@@ -752,6 +752,7 @@ class TransferTracker:
             cells = row.find_all("td")
 
             position, name = self.extract_position_and_name(cells[0])
+            url = self.extract_url(cells[0])
 
             if name is None:
                 return None
@@ -771,6 +772,7 @@ class TransferTracker:
                 former_school_url = None
 
             player["name"] = name
+            player["url"] = url
             player["position"] = position
             player["formerSchoolName"] = former_school_name
             player["formerSchoolUrl"] = former_school_url

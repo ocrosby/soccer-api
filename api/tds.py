@@ -166,12 +166,13 @@ player_model = ns.model(
 transfer_model = ns.model(
     "Transfer",
     {
-        "name": fields.String(required=True, description=""),
-        "position": fields.String(required=True, description=""),
-        "formerSchoolName": fields.String(required=True, description=""),
-        "formerSchoolUrl": fields.String(required=True, description=""),
-        "newSchoolName": fields.String(required=True, description=""),
-        "newSchoolUrl": fields.String(required=True, description="")
+        "name": fields.String(required=True, description="The players name"),
+        "url": fields.String(required=False, description="The players URL"),
+        "position": fields.String(required=True, description="The players position"),
+        "formerSchoolName": fields.String(required=True, description="The players former school name"),
+        "formerSchoolUrl": fields.String(required=False, description="The URL of the players former school"),
+        "newSchoolName": fields.String(required=True, description="The players new school name"),
+        "newSchoolUrl": fields.String(required=False, description="the URL of the players new school")
     }
 )
 
