@@ -293,7 +293,7 @@ players_parser.add_argument(
     help='Bad choice: {error_msg}'
 )
 
-@ns.route("/transfers")
+@ns.route("/college/transfers")
 class TransferTracker(Resource):
     @ns.doc("transfer_tracker")
     @ns.response(HTTPStatus.OK.value, "Search for transfers", [transfer_model])
