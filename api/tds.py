@@ -159,9 +159,23 @@ player_model = ns.model(
         ),
         "commitmentUrl": fields.String(
             required=False, description="The committed schools URL"
-        ),
-    },
+        )
+    }
 )
+
+transfer_model = ns.model(
+    "Transfer",
+    {
+        "name": fields.String(required=True, description=""),
+        "position": fields.String(required=True, description=""),
+        "formerSchoolName": fields.String(required=True, description=""),
+        "formerSchoolUrl": fields.String(required=True, description=""),
+        "newSchoolName": fields.String(required=True, description=""),
+        "newSchoolUrl": fields.String(required=True, description="")
+    }
+)
+
+
 
 players_parser = reqparse.RequestParser(bundle_errors=True)
 players_parser.add_argument("name", type=str, location="json")
@@ -278,6 +292,30 @@ players_parser.add_argument(
     help='Bad choice: {error_msg}'
 )
 
+@ns.route("/transfers")
+class TransferTracker(Resource):
+    @ns.doc("transfer_tracker")
+    @ns.response(HTTPStatus.OK.value, "Search for transfers", [transfer_model])
+    @ns.response(HTTPStatus.BAD_REQUEST.value, "Item not found")
+    @ns.marshal_list_with(transfer_model)
+    def get(self):
+        """Get the transfers"""
+        try:
+            tracker = utils.TransferTracker()
+            transfers = tracker.get_transfers()
+
+            return transfers
+        except HTTPError as http_err:
+            print(f"HTTP error occurred: {http_err}")
+            return ns.abort(
+                HTTPStatus.BAD_REQUEST.value, f"HTTP error occurred: {http_err}"
+            )
+        except Exception as err:
+            pprint(err.data["errors"])
+            print(f"Other error occurred: {err}")
+            return ns.abort(
+                HTTPStatus.BAD_REQUEST.value, f"Other error occurred: {err}"
+            )
 
 @ns.route("/players")
 @ns.expect(players_parser)
@@ -428,3 +466,4 @@ class ConferenceCommits(Resource):
             return ns.abort(
                 HTTPStatus.BAD_REQUEST.value, f"Other error occurred: {err}"
             )
+
