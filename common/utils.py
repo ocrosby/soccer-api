@@ -800,6 +800,9 @@ class TransferTracker:
             if player is None:
                 continue
 
+            if len(player["name"]) == 0:
+                continue
+
             transfers.append(player)
 
         return transfers

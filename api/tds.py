@@ -313,7 +313,6 @@ class TransferTracker(Resource):
                 HTTPStatus.BAD_REQUEST.value, f"HTTP error occurred: {http_err}"
             )
         except Exception as err:
-            pprint(err.data["errors"])
             print(f"Other error occurred: {err}")
             return ns.abort(
                 HTTPStatus.BAD_REQUEST.value, f"Other error occurred: {err}"
