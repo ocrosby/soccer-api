@@ -6,6 +6,8 @@ RUN pip install -U pip && pip install -r requirements.txt && pip install gunicor
 COPY ./api /app/api
 COPY ./bin /app/bin
 COPY ./common /app/common
+COPY ./data /app/data
+COPY ./lib /app/lib
 COPY wsgi.py /app/wsgi.py
 WORKDIR /app
 
