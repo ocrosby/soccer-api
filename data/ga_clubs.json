@@ -1,0 +1,484 @@
+{
+  "data": [
+    {
+      "name": "BVB International Academy NTX",
+      "state": "TX",
+      "conference": "FRONTIER",
+      "url": "https://www.bvbinternationalacademy-ntx.com/"
+    },
+    {
+      "name": "Houston Dynamo Dash Youth Soccer Club",
+      "state": "TX",
+      "conference": "FRONTIER",
+      "url": "https://dynamodashyouth.com/"
+    },
+    {
+      "name": "Kansas Rush Soccer Club",
+      "state": "KS",
+      "conference": "FRONTIER",
+      "url": "https://www.kansasrush.com/"
+    },
+    {
+      "name": "Lonestar SC Academy",
+      "state": "TX",
+      "conference": "FRONTIER",
+      "url": "https://lonestar-sc.com/"
+    },
+    {
+      "name": "Lou Fusz Athletic",
+      "state": "MO",
+      "conference": "FRONTIER",
+      "url": "https://www.loufuszathletic.com/"
+    },
+    {
+      "name": "RISE Soccer Club",
+      "state": "TX",
+      "conference": "FRONTIER",
+      "url": "https://www.risesc.org/"
+    },
+    {
+      "name": "SA City Soccer Club",
+      "state": "TX",
+      "conference": "FRONTIER",
+      "url": "https://www.sacitysc.com/"
+    },
+    {
+      "name": "Sporting St. Louis",
+      "state": "MO",
+      "conference": "FRONTIER",
+      "url": "https://www.sportingstl.com/"
+    },
+    {
+      "name": "Beadling SC",
+      "state": "PA",
+      "conference": "MID-AMERICA",
+      "url": "https://www.beadling.com/"
+    },
+    {
+      "name": "Century United",
+      "state": "PA",
+      "conference": "MID-AMERICA",
+      "url": "https://www.centurysoccer.org/"
+    },
+    {
+      "name": "Chicago FC United",
+      "state": "IL",
+      "conference": "MID-AMERICA",
+      "url": "https://www.chicagofcunited.com/"
+    },
+    {
+      "name": "Cincinnati United SC",
+      "state": "OH",
+      "conference": "MID-AMERICA",
+      "url": "http://www.cincinnatiunitedsoccer.com/"
+    },
+    {
+      "name": "FC Evolution",
+      "state": "OH",
+      "conference": "MID-AMERICA",
+      "url": "http://fcevowest.com/"
+    },
+    {
+      "name": "Indy Premier United",
+      "state": "IN",
+      "conference": "MID-AMERICA",
+      "url": "http://www.indypremiersc.org/"
+    },
+    {
+      "name": "Michigan Jaguars FC",
+      "state": "MI",
+      "conference": "MID-AMERICA",
+      "url": "https://www.michiganjaguarsfc.com/"
+    },
+    {
+      "name": "Minnesota Eclipse",
+      "state": "MN",
+      "conference": "MID-AMERICA",
+      "url": "https://www.mneclipse.com/"
+    },
+    {
+      "name": "Nationals-Blue",
+      "state": "MI",
+      "conference": "MID-AMERICA",
+      "url": "https://girlsda.nationalssoccer.com/home"
+    },
+    {
+      "name": "Nationals-Grey",
+      "state": "MI",
+      "conference": "MID-AMERICA",
+      "url": "https://girlsda.nationalssoccer.com/home"
+    },
+    {
+      "name": "Salvo Soccer Club",
+      "state": "MN",
+      "conference": "MID-AMERICA",
+      "url": "http://salvosoccer.org/"
+    },
+    {
+      "name": "SC Wave",
+      "state": "WI",
+      "conference": "MID-AMERICA",
+      "url": "https://www.scwave.org/"
+    },
+    {
+      "name": "Sockers FC Chicago",
+      "state": "IL",
+      "conference": "MID-AMERICA",
+      "url": "https://sockersfcchicago.com/"
+    },
+    {
+      "name": "Baltimore Armour",
+      "state": "MD",
+      "conference": "MID-ATLANTIC",
+      "url": "https://www.baltimorearmour.com/"
+    },
+    {
+      "name": "Baltimore Celtic",
+      "state": "MD",
+      "conference": "MID-ATLANTIC",
+      "url": "https://baltimoreceltic.com/"
+    },
+    {
+      "name": "Cedar Stars Academy Monmouth",
+      "state": "NJ",
+      "conference": "MID-ATLANTIC",
+      "url": "https://www.cedarstars.com/monmouth-division"
+    },
+    {
+      "name": "Metro United",
+      "state": "VA",
+      "conference": "MID-ATLANTIC",
+      "url": "https://metroutd.org/"
+    },
+    {
+      "name": "PA Classics",
+      "state": "PA",
+      "conference": "MID-ATLANTIC",
+      "url": "http://www.paclassics.org/"
+    },
+    {
+      "name": "SJEB FC",
+      "state": "NJ",
+      "conference": "MID-ATLANTIC",
+      "url": "https://www.sjebfc.com/"
+    },
+    {
+      "name": "Skyline Elite SC",
+      "state": "VA",
+      "conference": "MID-ATLANTIC",
+      "url": "https://www.skylineelitesc.org/"
+    },
+    {
+      "name": "Sporting Delaware Soccer Club",
+      "state": "DE",
+      "conference": "MID-ATLANTIC",
+      "url": "https://www.thechasefieldhouse.com/sportingdelaware"
+    },
+    {
+      "name": "TSJ FC Virginia",
+      "state": "VA",
+      "conference": "MID-ATLANTIC",
+      "url": "https://www.fcvirginia.com/"
+    },
+    {
+      "name": "Ukranian Nationals SC",
+      "state": "PA",
+      "conference": "MID-ATLANTIC",
+      "url": "https://www.ukrainiannationals.com/"
+    },
+    {
+      "name": "Albion SC Las Vegas",
+      "state": "NV",
+      "conference": "MOUNTAIN WEST",
+      "url": "http://www.albionsclv.org/"
+    },
+    {
+      "name": "Albuquerque United FC Thorns",
+      "state": "NM",
+      "conference": "MOUNTAIN WEST",
+      "url": "https://www.aufc.org/"
+    },
+    {
+      "name": "Broomfield Soccer Club",
+      "state": "CO",
+      "conference": "MOUNTAIN WEST",
+      "url": "http://www.broomfieldsoccerclub.org/"
+    },
+    {
+      "name": "Colorado Rush",
+      "state": "CO",
+      "conference": "MOUNTAIN WEST",
+      "url": "https://www.coloradorush.com/coloradorushsc"
+    },
+    {
+      "name": "Las Vegas Sports Academy",
+      "state": "NV",
+      "conference": "MOUNTAIN WEST",
+      "url": "https://www.lv-sa.net/"
+    },
+    {
+      "name": "Rio Rapids SC",
+      "state": "NM",
+      "conference": "MOUNTAIN WEST",
+      "url": "http://www.riorapids.org/"
+    },
+    {
+      "name": "SC del Sol",
+      "state": "AZ",
+      "conference": "MOUNTAIN WEST",
+      "url": "https://www.scdelsol.com/"
+    },
+    {
+      "name": "Utah Celtic",
+      "state": "UT",
+      "conference": "MOUNTAIN WEST",
+      "url": "http://ucrfc.com/"
+    },
+    {
+      "name": "Cedar Stars Academy Bergen",
+      "state": "NJ",
+      "conference": "NORTHEAST",
+      "url": "https://www.cedarstars.com/bergen"
+    },
+    {
+      "name": "Empire United",
+      "state": "NY",
+      "conference": "NORTHEAST",
+      "url": "https://www.empireunited.soccer/"
+    },
+    {
+      "name": "Long Island Soccer Club",
+      "state": "NY",
+      "conference": "NORTHEAST",
+      "url": "https://longislandsc.com/"
+    },
+    {
+      "name": "NEFC",
+      "state": "MA",
+      "conference": "NORTHEAST",
+      "url": "https://www.nefc.us/"
+    },
+    {
+      "name": "New York Soccer Club",
+      "state": "NY",
+      "conference": "NORTHEAST",
+      "url": "https://www.newyorksoccerclub.org/about"
+    },
+    {
+      "name": "Oakwood Soccer Club",
+      "state": "CT",
+      "conference": "NORTHEAST",
+      "url": "https://www.oakwoodsoccer.com/"
+    },
+    {
+      "name": "Seacoast United",
+      "state": "NH",
+      "conference": "NORTHEAST",
+      "url": "http://www.seacoastunited.com/"
+    },
+    {
+      "name": "South Shore Select",
+      "state": "MA",
+      "conference": "NORTHEAST",
+      "url": "https://selectma.com/"
+    },
+    {
+      "name": "STA",
+      "state": "NJ",
+      "conference": "NORTHEAST",
+      "url": "https://www.stasoccer.org/stagirlsacademy"
+    },
+    {
+      "name": "Breakers FC",
+      "state": "CA",
+      "conference": "NORTHWEST",
+      "url": "https://www.breakersacademy.org/"
+    },
+    {
+      "name": "Bridge Soccer Academy",
+      "state": "OR",
+      "conference": "NORTHWEST",
+      "url": "http://bridgecitysoccer.org/"
+    },
+    {
+      "name": "Clovis Crossfire",
+      "state": "CA",
+      "conference": "NORTHWEST",
+      "url": "https://cloviscrossfire.com/"
+    },
+    {
+      "name": "Eastern Washington Surf",
+      "state": "WA",
+      "conference": "NORTHWEST",
+      "url": "https://www.ewsurfsc.com/"
+    },
+    {
+      "name": "Timbers FC",
+      "state": "OR",
+      "conference": "NORTHWEST",
+      "url": "http://www.eugenetimbers.org/"
+    },
+    {
+      "name": "FC Bay Area Surf",
+      "state": "CA",
+      "conference": "NORTHWEST",
+      "url": "https://www.fcbayarea.com/"
+    },
+    {
+      "name": "ISC Gunners",
+      "state": "WA",
+      "conference": "NORTHWEST",
+      "url": "https://www.iscgunners.org/"
+    },
+    {
+      "name": "Lamorinda Soccer Club",
+      "state": "CA",
+      "conference": "NORTHWEST",
+      "url": "https://lamorindasc.com/"
+    },
+    {
+      "name": "OL Reign Academy",
+      "state": "WA",
+      "conference": "NORTHWEST",
+      "url": "https://www.olreignacademy.com/#changing-the-game"
+    },
+    {
+      "name": "San Francisco Elite Academy",
+      "state": "CA",
+      "conference": "NORTHWEST",
+      "url": "https://www.sfeliteacademy.org/"
+    },
+    {
+      "name": "Santa Clara Sporting Club",
+      "state": "CA",
+      "conference": "NORTHWEST",
+      "url": "https://www.santaclarasporting.com/"
+    },
+    {
+      "name": "Silicon Valley Soccer Academy",
+      "state": "CA",
+      "conference": "NORTHWEST",
+      "url": "https://www.svsa.org/"
+    },
+    {
+      "name": "Spokane Sounders",
+      "state": "WA",
+      "conference": "NORTHWEST",
+      "url": "https://spokanesounders.org/"
+    },
+    {
+      "name": "Washington Timbers FC",
+      "state": "WA",
+      "conference": "NORTHWEST",
+      "url": "http://washingtontimbers.com/"
+    },
+    {
+      "name": "West Coast Soccer Club",
+      "state": "CA",
+      "conference": "NORTHWEST",
+      "url": "https://westcoastsoccerclub.sportngin.com/"
+    },
+    {
+      "name": "AFC Lightning",
+      "state": "GA",
+      "conference": "SOUTHEAST",
+      "url": "http://www.afclightning.org/"
+    },
+    {
+      "name": "Florida United",
+      "state": "FL",
+      "conference": "SOUTHEAST",
+      "url": "https://www.flunited.com/"
+    },
+    {
+      "name": "IMG Academy",
+      "state": "FL",
+      "conference": "SOUTHEAST",
+      "url": "https://www.imgacademy.com/boarding-school/athletics/soccer"
+    },
+    {
+      "name": "Palm Beach Gardens Predators Soccer",
+      "state": "FL",
+      "conference": "SOUTHEAST",
+      "url": "http://www.predatorssoccer.org/"
+    },
+    {
+      "name": "South Carolina Surf Soccer Club",
+      "state": "SC",
+      "conference": "SOUTHEAST",
+      "url": "http://www.southcarolinasurfsoccer.com/"
+    },
+    {
+      "name": "Southern Soccer Academy",
+      "state": "GA",
+      "conference": "SOUTHEAST",
+      "url": "http://www.ssaelite.com/"
+    },
+    {
+      "name": "Tophat Gold",
+      "state": "GA",
+      "conference": "SOUTHEAST",
+      "url": "https://www.nth-tophat.com/"
+    },
+    {
+      "name": "Tophat Navy",
+      "state": "GA",
+      "conference": "SOUTHEAST",
+      "url": "https://www.nth-tophat.com/"
+    },
+    {
+      "name": "United Soccer Alliance",
+      "state": "FL",
+      "conference": "SOUTHEAST",
+      "url": "https://www.unitedsocceralliance.org/"
+    },
+    {
+      "name": "Wake FC",
+      "state": "NC",
+      "conference": "SOUTHEAST",
+      "url": "https://www.wakefc.com/"
+    },
+    {
+      "name": "West Florida Flames",
+      "state": "FL",
+      "conference": "SOUTHEAST",
+      "url": "http://fcflames.com/"
+    },
+    {
+      "name": "Albion SC San Diego",
+      "state": "CA",
+      "conference": "SOUTHWEST",
+      "url": "http://www.albionsoccer.org/"
+    },
+    {
+      "name": "City SC",
+      "state": "CA",
+      "conference": "SOUTHWEST",
+      "url": "https://ourcitysc.com/"
+    },
+    {
+      "name": "LA Surf",
+      "state": "CA",
+      "conference": "SOUTHWEST",
+      "url": "https://wearelasurf.com/"
+    },
+    {
+      "name": "Murrieta Soccer Academy",
+      "state": "CA",
+      "conference": "SOUTHWEST",
+      "url": "http://www.murrietasocceracademy.com/"
+    },
+    {
+      "name": "San Diego Soccer Club Surf",
+      "state": "CA",
+      "conference": "SOUTHWEST",
+      "url": "https://www.sdscsurf.com/"
+    },
+    {
+      "name": "West Coast FC",
+      "state": "CA",
+      "conference": "SOUTHWEST",
+      "url": "https://www.westcoastfc.org/"
+    }
+  ]
+}
