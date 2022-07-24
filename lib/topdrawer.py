@@ -19,6 +19,30 @@ division_mapping = {
 
 PREFIX = "https://www.topdrawersoccer.com"
 
+def _get_anchor_text(element):
+    if element is None:
+        return None
+
+    anchor = element.find("a")
+
+    if anchor is None:
+        return element.text.strip()
+
+    return anchor.text.strip()
+
+def _get_anchor_url(element, prefix):
+    if element is None:
+        return None
+
+    anchor = element.find("a")
+
+    if anchor is None:
+        return None
+
+    if prefix is None:
+        return anchor["href"].strip()
+
+    return prefix + anchor["href"].strip()
 
 @cache.memoize(timeout=604800)
 def get_conferences_content(division: str):
@@ -311,3 +335,83 @@ def load_player_details(player):
     player["position"] = _get_player_position(soup)
     player["commitment"] = _get_player_commitment(soup)
     player["commitmentUrl"] = _get_player_commitment_url(soup)
+
+
+def _get_transfer_position(cell):
+    caption = cell.text.strip()
+    if caption == "Player":
+        return None
+
+    if "\xa0" in caption:
+        return caption.split("\xa0")[0].strip()
+
+    return caption.split(" ")[0].strip()
+
+def _get_transfer_name(cell):
+    caption = cell.text.strip()
+    if caption == "Player":
+        return None
+
+    if "\xa0" in caption:
+        return caption.split("\xa0")[1].strip()
+
+    return " ".join(caption.split(" ")[1:]).strip()
+
+def _get_transfer(row):
+    try:
+        cells = row.find_all("td")
+
+        name = _get_transfer_name(cells[0])
+        print(f"Processing '{name}'")
+
+        if name is None or len(name) == 0:
+            return None
+
+        player = {
+            "name": name,
+            "position": None,
+            "url": None,
+            "formerSchoolName": None,
+            "formerSchoolUrl": None,
+            "newSchoolName": None,
+            "newSchoolUrl": None
+        }
+
+        player["position"] = _get_transfer_position(cells[0])
+        player["url"] = _get_anchor_url(cells[0], PREFIX)
+
+        if len(cells) > 1:
+            player["formerSchoolName"] = _get_anchor_text(cells[1])
+            player["formerSchoolUrl"] = _get_anchor_url(cells[1], PREFIX)
+
+        if len(cells) > 2:
+            player["newSchoolName"] = _get_anchor_text(cells[2])
+            player["newSchoolUrl"] = _get_anchor_url(cells[2], PREFIX)
+    except Exception as err:
+        print(row.text)
+        print(err)
+
+    print(player)
+
+    return player
+
+@cache.cached(timeout=86400) # cache for 1 day
+def get_transfers():
+    url = "https://www.topdrawersoccer.com/college-soccer-articles/2022-womens-di-transfer-tracker_aid50187"
+
+    response = requests.get(url)
+    response.raise_for_status()
+
+    soup = BeautifulSoup(response.content, "html.parser")
+    rows = soup.find_all("tr")
+
+    transfers = []
+    for row in rows:
+        player = _get_transfer(row)
+        if player is None:
+            continue
+
+        transfers.append(player)
+
+    return transfers
+

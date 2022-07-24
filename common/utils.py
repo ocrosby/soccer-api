@@ -192,116 +192,6 @@ class ClubSearch:
 
         return clubs
 
-
-class TransferTracker:
-    def __init__(self):
-        self.prefix = "https://www.topdrawersoccer.com"
-
-    def extract_position_and_name(self, cell):
-        try:
-            buffer = cell.text.strip()
-
-            if buffer == "Player":
-                return (None, None)
-
-            if "\xa0" in buffer:
-                tokens = buffer.split("\xa0")
-
-                position = tokens[0].strip()
-                name = tokens[1].strip()
-            else:
-                tokens = buffer.split(" ")
-
-                position = tokens[0].strip()
-                name = " ".join(tokens[1:]).strip()
-
-            print(f"Processing '{name}' ...")
-
-            return (position, name)
-        except Exception as err:
-            print(err)
-
-    def extract_school_name(self, cell):
-        return cell.text.strip()
-
-    def extract_url(self, cell):
-        anchor = cell.find("a")
-
-        if anchor is None:
-            return None
-
-        url = self.prefix + anchor["href"].strip()
-
-        return url
-
-    def extract_school(self, cell):
-        name = self.extract_school_name(cell)
-        url = self.extract_url(cell)
-
-        return (name, url)
-
-    def extract_transfer(self, row):
-        player = {}
-
-        try:
-            cells = row.find_all("td")
-
-            position, name = self.extract_position_and_name(cells[0])
-            url = self.extract_url(cells[0])
-
-            if name is None:
-                return None
-
-            if len(cells) > 1:
-                former_school_name, former_school_url = self.extract_school(cells[1])
-
-                if len(cells) > 2:
-                    new_school_name, new_school_url = self.extract_school(cells[2])
-                else:
-                    new_school_name = None
-                    new_school_url = None
-            else:
-                new_school_name = None
-                new_school_url = None
-                former_school_name = None
-                former_school_url = None
-
-            player["name"] = name
-            player["url"] = url
-            player["position"] = position
-            player["formerSchoolName"] = former_school_name
-            player["formerSchoolUrl"] = former_school_url
-            player["newSchoolName"] = new_school_name
-            player["newSchoolUrl"] = new_school_url
-        except Exception as err:
-            print(err)
-            raise err
-
-        return player
-
-    def get_transfers(self):
-        url = "https://www.topdrawersoccer.com/college-soccer-articles/2022-womens-di-transfer-tracker_aid50187"
-
-        response = requests.get(url)
-        response.raise_for_status()
-
-        soup = BeautifulSoup(response.content, "html.parser")
-        rows = soup.find_all("tr")
-
-        transfers = []
-        for row in rows:
-            player = self.extract_transfer(row)
-
-            if player is None:
-                continue
-
-            if len(player["name"]) == 0:
-                continue
-
-            transfers.append(player)
-
-        return transfers
-
 class PlayerSearch:
     def __init__(self):
         """Constructor"""
@@ -521,13 +411,6 @@ class TopDrawerSoccer:
     def __init__(self):
         """Constructor"""
         self.prefix = "https://www.topdrawersoccer.com"
-
-    def apply_club_translations(self, schools):
-        for school in schools:
-            for player in school['players']:
-                club = player['club']
-                if club in CLUB_TRANSLATIONS:
-                    player['club'] = CLUB_TRANSLATIONS[club]
 
     @cache.memoize(timeout=604800)
     def get_conference(self, gender: str, division: str, name: str):

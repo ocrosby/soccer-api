@@ -301,12 +301,10 @@ class TransferTracker(Resource):
     @ns.response(HTTPStatus.OK.value, "Search for transfers", [transfer_model])
     @ns.response(HTTPStatus.BAD_REQUEST.value, "Item not found")
     @ns.marshal_list_with(transfer_model)
-    @cache.cached(timeout=3600) # cache for 1 hour
     def get(self):
         """Get the transfers"""
         try:
-            tracker = utils.TransferTracker()
-            transfers = tracker.get_transfers()
+            transfers = topdrawer.get_transfers()
 
             return transfers
         except HTTPError as http_err:
@@ -375,7 +373,6 @@ class ConferenceList(Resource):
     @ns.response(HTTPStatus.OK.value, "Get the item list", [conference_model])
     @ns.response(HTTPStatus.BAD_REQUEST.value, "Item not found")
     @ns.marshal_list_with(conference_model)
-    @cache.memoize(timeout=604800)
     def get(self, gender: str, division: str):
         """List all conferences"""
         try:
