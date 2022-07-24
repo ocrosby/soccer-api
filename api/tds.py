@@ -9,6 +9,8 @@ from requests.exceptions import HTTPError
 from common import utils
 from common.extensions import cache
 
+from lib import topdrawer
+
 ns = Namespace("tds", description="TopDrawerSoccer related operations")
 
 college_organization_model = ns.model(
@@ -452,11 +454,11 @@ class ConferenceCommits(Resource):
     @ns.response(HTTPStatus.OK.value, "Get the conference commits", conference_model)
     @ns.response(HTTPStatus.BAD_REQUEST.value, "Commitments not found")
     @ns.marshal_list_with(school_model)
-    @cache.memoize(timeout=604800)
     def get(self, gender: str, division: str, name: str, year: int):
         """Get a conferences commitments"""
         try:
-            schools = tds.get_conference_commits(gender, division, name, year)
+            print("Actively processing conference commits ...")
+            schools = topdrawer.get_conference_commits(gender, division, name, year)
 
             return schools
         except HTTPError as http_err:

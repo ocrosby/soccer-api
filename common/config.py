@@ -23,6 +23,20 @@ def load_ga_clubs(path: str):
 
     return clubs
 
+def translate_club_name(club_name: str):
+    if club_name is None:
+        return None
+
+    club_name = club_name.strip()
+
+    if len(club_name) == 0:
+        return ''
+
+    if club_name in CLUB_TRANSLATIONS:
+        club_name = CLUB_TRANSLATIONS[club_name]
+
+    return club_name
+
 GA_CLUBS = load_ga_clubs("data/ga_clubs.json")
 CLUB_TRANSLATIONS = load_club_translations("data/club_translations.json")
 
