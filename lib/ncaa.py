@@ -104,3 +104,32 @@ def get_usc_d2_rankings():
 
     return rankings
 
+@cache.memoize(timeout=604800) # 1 week
+def get_schools(division: str):
+    if division == "di":
+        url = "https://web3.ncaa.org/directory/api/directory/memberList?type=12&division=I&_=1658873231181"
+    elif division == "dii":
+        url = "https://web3.ncaa.org/directory/api/directory/memberList?type=12&division=II&_=1658873247608"
+    elif division == "diii":
+        url = "https://web3.ncaa.org/directory/api/directory/memberList?type=12&division=III&_=1658872974705"
+    else:
+        return []
+
+    response = requests.get(url)
+
+    response.raise_for_status()
+
+    records = response.json()
+
+    schools = []
+    for record in records:
+        school = {
+            "name": record["nameOfficial"],
+            "conference": record["conferenceName"],
+            "private": record["privateFlag"],
+            "hbcu": record["historicallyBlackFlag"],
+            "state": record["memberOrgAddress"]["state"]
+        }
+        schools.append(school)
+
+    return schools
