@@ -1,4 +1,15 @@
 {
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true,
+  "python.testing.pytestArgs": [
+      "-v",
+      "--cov=api/",
+      "--cov=common/",
+      "--cov=lib/",
+      "--cov-report=xml:cov.xml",
+      "--pdb",
+      "tests/"
+  ],
     "cSpell.words": [
       "Anza",
       "ASUN",
@@ -13,6 +24,7 @@
       "FCIA",
       "Fusz",
       "Futbol",
+      "gradyear",
       "Gretna",
       "healthz",
       "jsonify",
@@ -42,6 +54,7 @@
       "Tophat",
       "venv",
       "Wilimington",
-      "wsgi"
+      "wsgi",
+      "xxxsomething"
     ]
 }

@@ -1,3 +1,4 @@
+from dbm.ndbm import library
 from http import HTTPStatus
 
 import flask
@@ -8,6 +9,8 @@ from requests.exceptions import HTTPError
 
 from common import utils
 from common.extensions import cache
+
+from common import config
 
 from lib import topdrawer
 
@@ -92,11 +95,6 @@ division_parser.add_argument(
     "division", type=str, choices=("di", "dii", "diii", "naia", "njcaa")
 )
 
-COLLEGE_ORGANIZATIONS = [
-    {"id": "ncaa", "name": "National Collegiate Athletic Association"},
-    {"id": "naia", "name": "National Association of Intercollegiate Athletics"},
-    {"id": "njcaa", "name": "National Junior College Athletic Association"},
-]
 
 
 @ns.route("/college/organizations")
@@ -105,19 +103,9 @@ class CollegeOrganizations(Resource):
     @ns.response(HTTPStatus.OK.value, "Get the organization list", [conference_model])
     @ns.response(HTTPStatus.BAD_REQUEST.value, "Item not found")
     @ns.marshal_list_with(college_organization_model)
-    @cache.cached(timeout=604800, key_prefix='list_college_organizations')
     def get(self):
         """List all college organizations"""
-        return COLLEGE_ORGANIZATIONS
-
-
-COLLEGE_DIVISIONS = [
-    {"divisionId": 1, "divisionName": "di", "orgId": "ncaa"},
-    {"divisionId": 2, "divisionName": "dii", "orgId": "ncaa"},
-    {"divisionId": 3, "divisionName": "diii", "orgId": "ncaa"},
-    {"divisionId": 4, "divisionName": "naia", "orgId": "naia"},
-    {"divisionId": 5, "divisionName": "njcaa", "orgId": "njcaa"},
-]
+        return config.COLLEGE_ORGANIZATIONS
 
 
 @ns.route("/college/divisions")
@@ -126,10 +114,9 @@ class CollegeDivisions(Resource):
     @ns.response(HTTPStatus.OK.value, "Get the division list", [conference_model])
     @ns.response(HTTPStatus.BAD_REQUEST.value, "Item not found")
     @ns.marshal_list_with(college_division_model)
-    @cache.cached(timeout=604800, key_prefix='list_college_divisions')
     def get(self):
         """List all college divisions"""
-        return COLLEGE_DIVISIONS
+        return config.COLLEGE_DIVISIONS
 
 
 player_model = ns.model(
@@ -304,9 +291,7 @@ class TransferTracker(Resource):
     def get(self):
         """Get the transfers"""
         try:
-            transfers = topdrawer.get_transfers()
-
-            return transfers
+            return topdrawer.get_transfers()
         except HTTPError as http_err:
             print(f"HTTP error occurred: {http_err}")
             return ns.abort(
@@ -317,6 +302,63 @@ class TransferTracker(Resource):
             return ns.abort(
                 HTTPStatus.BAD_REQUEST.value, f"Other error occurred: {err}"
             )
+
+
+def _get_gender_id(args):
+    gender = args["gender"]
+
+    if gender is None:
+        return ""
+
+    gender = gender.lower()
+    if gender in ["female", "f"]:
+        return "f"
+
+    if gender in ["male", "m"]:
+        return "m"
+
+    return ""
+
+def _get_position_id(args):
+    position = args["position"]
+
+    if position is None:
+        return "0"
+
+    if position in config.POSITION_LOOKUP:
+        return config.POSITION_LOOKUP[position]
+
+    return "0"
+
+def _get_grad_year(args):
+    grad_year = args["gradyear"]
+
+    if grad_year is None:
+        return ""
+
+    return grad_year
+
+def _get_region_id(args):
+    region = args["region"]
+
+    if region is None:
+        return "0"
+
+    if region in config.REGION_LOOKUP:
+        return config.REGION_LOOKUP[region]
+
+    return "0"
+
+def _get_state_id(args):
+    state = args["state"]
+
+    if state is None:
+        return "0"
+
+    if state in config.STATE_LOOKUP:
+        return config.STATE_LOOKUP[state]
+
+    return 0
 
 @ns.route("/players")
 @ns.expect(players_parser)
@@ -330,12 +372,18 @@ class PlayerSearch(Resource):
         try:
             args = players_parser.parse_args()
 
-            print(args)
+            gender = _get_gender_id(args)
+            position = _get_position_id(args)
+            grad_year = _get_grad_year(args)
+            region = _get_region_id(args)
+            state = _get_state_id(args)
 
-            player_search = utils.PlayerSearch()
-            players = player_search.get_players(args)
+            return topdrawer.search_for_players(gender, position, grad_year, region, state)
 
-            return players
+            # player_search = utils.PlayerSearch()
+            # players = player_search.get_players(args)
+
+            # return players
         except HTTPError as http_err:
             print(f"HTTP error occurred: {http_err}")
             return ns.abort(

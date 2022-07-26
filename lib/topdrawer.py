@@ -3,46 +3,32 @@ import requests
 from bs4 import BeautifulSoup
 
 from common.extensions import cache
+from common import tools
 from common import config
 from lib import topdrawer
 
 from . import ga
 from . import ecnl
 
-division_mapping = {
-    "di": "/di/divisionid-1",
-    "dii": "/dii/divisionid-2",
-    "diii": "/diii/divisionid-3",
-    "naia": "/naia/divisionid-4",
-    "njcaa": "/njcaa/divisionid-5"
-}
-
 PREFIX = "https://www.topdrawersoccer.com"
 
-def _get_anchor_text(element):
-    if element is None:
+
+def get_identifier_from_url(url):
+    if url is None:
         return None
 
-    anchor = element.find("a")
-
-    if anchor is None:
-        return element.text.strip()
-
-    return anchor.text.strip()
-
-def _get_anchor_url(element, prefix):
-    if element is None:
+    url = url.strip()
+    if len(url) == 0:
         return None
 
-    anchor = element.find("a")
+    tokens = url.split('/')
+    last_segment = tokens[-1]
 
-    if anchor is None:
-        return None
+    tokens = last_segment.split('-')
+    buffer = tokens[-1]
+    identifier = int(buffer)
 
-    if prefix is None:
-        return anchor["href"].strip()
-
-    return prefix + anchor["href"].strip()
+    return identifier
 
 @cache.memoize(timeout=604800)
 def get_conferences_content(division: str):
@@ -51,8 +37,8 @@ def get_conferences_content(division: str):
 
     suffix = ""
 
-    if division in division_mapping:
-        suffix = division_mapping[division]
+    if division in config.DIVISION_MAPPING:
+        suffix = config.DIVISION_MAPPING[division]
 
     url = url + suffix
     response = requests.get(url)
@@ -118,48 +104,6 @@ def get_conference(gender: str, division: str, conference_name: str):
 
     return None
 
-@cache.memoize(timeout=604800)
-def _is_ecnl_club(target_club_name, ecnl_clubs):
-    if target_club_name is None:
-        return False
-
-    if ecnl_clubs is None:
-        return False
-
-    temp = target_club_name.strip().lower()
-
-    if len(temp) == 0:
-        return False
-
-    for club in ecnl_clubs:
-        current_club_name = club["name"].strip().lower()
-
-        if current_club_name == temp:
-            return True
-
-    return False
-
-
-@cache.memoize(timeout=604800)
-def _is_ga_club(target_club_name, ga_clubs):
-    if target_club_name is None:
-        return False
-
-    if ga_clubs is None:
-        return False
-
-    temp = target_club_name.strip().lower()
-
-    if len(temp) == 0:
-        return False
-
-    for club in ga_clubs:
-        current_club_name = club["name"].strip().lower()
-
-        if current_club_name == temp:
-            return True
-
-    return False
 
 @cache.memoize(timeout=604800)  # 1 week
 def _get_league(club_name: str, ecnl_clubs, ga_clubs):
@@ -169,13 +113,14 @@ def _get_league(club_name: str, ecnl_clubs, ga_clubs):
     if len(club_name) == 0:
         return "Other"
 
-    if _is_ecnl_club(club_name, ecnl_clubs):
+    if tools.is_member_club(club_name, ecnl_clubs):
         return "ECNL"
-    elif _is_ga_club(club_name, ga_clubs):
+    elif tools.is_member_club(club_name, ga_clubs):
         return "GA"
     else:
         print("Could not find the club (" + club_name + ")")
         return "Other"
+
 
 @cache.memoize(timeout=604800)  # 1 week
 def get_conference_commits(gender: str, division: str, conference_name: str, year: int):
@@ -205,6 +150,7 @@ def get_conference_commits(gender: str, division: str, conference_name: str, yea
                 "name": columns[0].text.strip(),
                 "players": []
             }
+            # print(f"Adding school {school['name']} ...")
             schools.append(school)
         else:
             grad_year = columns[1].text.strip()
@@ -220,11 +166,14 @@ def get_conference_commits(gender: str, division: str, conference_name: str, yea
                     "club": columns[5].text.strip().replace("  ", " ")
                 }
 
+                # print(f"Loading details for player '{player['name']}' ...")
                 topdrawer.load_player_details(player)
+                # print("Details loaded successfully")
 
                 player["club"] = config.translate_club_name(player["club"])
                 player["league"] = _get_league(player["club"], ecnl_clubs, ga_clubs)
 
+                # print(f"Adding '{player['name']}' to '{school['name']}' ...")
                 school["players"].append(player)
 
     return schools
@@ -293,6 +242,10 @@ def _get_player_commitment_url(element):
 
 def _load_profile_grid_settings(element, details):
     container = element.find("ul", class_=["profile_grid"])
+
+    if container is None:
+        return
+
     items = container.findChildren("li")
 
     for item in items:
@@ -347,6 +300,7 @@ def _get_transfer_position(cell):
 
     return caption.split(" ")[0].strip()
 
+
 def _get_transfer_name(cell):
     caption = cell.text.strip()
     if caption == "Player":
@@ -356,6 +310,7 @@ def _get_transfer_name(cell):
         return caption.split("\xa0")[1].strip()
 
     return " ".join(caption.split(" ")[1:]).strip()
+
 
 def _get_transfer(row):
     try:
@@ -367,7 +322,7 @@ def _get_transfer(row):
         if name is None or len(name) == 0:
             return None
 
-        player = {
+        transfer = {
             "name": name,
             "position": None,
             "url": None,
@@ -377,25 +332,27 @@ def _get_transfer(row):
             "newSchoolUrl": None
         }
 
-        player["position"] = _get_transfer_position(cells[0])
-        player["url"] = _get_anchor_url(cells[0], PREFIX)
+        transfer["position"] = _get_transfer_position(cells[0])
+        transfer["url"] = tools.get_anchor_url(cells[0], PREFIX)
 
         if len(cells) > 1:
-            player["formerSchoolName"] = _get_anchor_text(cells[1])
-            player["formerSchoolUrl"] = _get_anchor_url(cells[1], PREFIX)
+            transfer["formerSchoolName"] = tools.get_anchor_text(cells[1])
+            transfer["formerSchoolUrl"] = tools.get_anchor_url(cells[1], PREFIX)
 
         if len(cells) > 2:
-            player["newSchoolName"] = _get_anchor_text(cells[2])
-            player["newSchoolUrl"] = _get_anchor_url(cells[2], PREFIX)
+            transfer["newSchoolName"] = tools.get_anchor_text(cells[2])
+            transfer["newSchoolUrl"] = tools.get_anchor_url(cells[2], PREFIX)
+
     except Exception as err:
         print(row.text)
         print(err)
 
-    print(player)
+    print(transfer)
 
-    return player
+    return transfer
 
-@cache.cached(timeout=86400) # cache for 1 day
+
+@cache.cached(timeout=86400, key_prefix='transfers')  # cache for 1 day
 def get_transfers():
     url = "https://www.topdrawersoccer.com/college-soccer-articles/2022-womens-di-transfer-tracker_aid50187"
 
@@ -415,3 +372,204 @@ def get_transfers():
 
     return transfers
 
+@cache.memoize(timeout=604800) # 1 week
+def get_conferences(gender: str, division: str):
+    url = "https://www.topdrawersoccer.com/college-soccer/college-conferences"
+
+    suffix = ""
+    if division in config.DIVISION_MAPPING:
+        suffix = config.DIVISION_MAPPING[division]
+
+    response = requests.get(url + suffix)
+
+    response.raise_for_status()
+
+    conferences = []
+
+    soup = BeautifulSoup(response.content, "html.parser")
+
+    column_elements = soup.find_all("div", class_="col-lg-6")
+
+    for column_element in column_elements:
+        heading_element = column_element.find("div", class_="heading-rectangle")
+        heading = heading_element.text.strip()
+
+        table = column_element.find("table", class_=["table_striped", "tds_table"])
+
+        if table is None:
+            continue
+
+        cells = table.find_all("td")
+
+        for cell in cells:
+            url = tools.get_anchor_url(cell, PREFIX)
+            name = tools.get_anchor_text(cell)
+
+            conference_id = get_identifier_from_url(url)
+
+            if gender == "male" and "Men's" in heading:
+                conferences.append(
+                    {"id": conference_id, "name": name, "url": url})
+
+            if gender == "female" and "Women's" in heading:
+                conferences.append(
+                    {"id": conference_id, "name": name, "url": url})
+
+    return conferences
+
+def _generate_player_suffix(gender: str, position: str, grad_year: str, region: str, state: str, page: int):
+    suffix = "&genderId=" + gender
+    suffix += "&positionId=" + str(position)
+    suffix += "&graduationYear=" + grad_year
+    suffix += "&regionId=" + str(region)
+    suffix += "&countyId=" + str(state)
+    suffix += "&pageNo=" + str(page)
+    suffix += "&area=clubplayer&sortColumns=0&sortDirections=1&search=1"
+
+    return suffix
+
+def _get_search_pages(element):
+    pagination = element.find("ul", class_=["pagination"])
+
+    if pagination is None:
+        return []
+
+    page_items = pagination.findChildren("li", class_=["page-item"])
+
+    pages = []
+    for page_item in page_items:
+        text = page_item.text.strip()
+
+        if text in ["Previous", "1", "Next"]:
+            continue
+
+        pages.append(int(text))
+
+    return pages
+
+def _extract_club(item):
+    buffer = item.find("div", class_="ml-2").text.strip()
+    target = buffer.split('\t\t\t\t')[1].strip()
+    pieces = target.split('/')
+
+    if len(pieces) >= 1:
+        return pieces[0]
+
+    return None
+
+def _extract_high_school(item):
+    buffer = item.find("div", class_="ml-2").text.strip()
+    target = buffer.split('\t\t\t\t')[1].strip()
+    pieces = target.split('/')
+
+    if len(pieces) == 1:
+        high_school = None
+    elif len(pieces) == 2:
+        high_school = pieces[1]
+    else:
+        high_school = None
+
+    return high_school
+
+def _extract_image_url(item):
+    image = item.find("img", class_="imageProfile")
+
+    if image is not None:
+        return PREFIX + image["src"]
+
+    return None
+
+def _extract_rating(item):
+    rating = item.find("span", class_="rating")["style"]
+    rating = int(rating.split(':')[-1].split('%')[0]) // 20
+
+    if rating > 0:
+        rating = str(rating) + ' star'
+    else:
+        rating = "Not Rated"
+
+    return rating
+
+def _extract_commitment(item):
+    commitment_span = item.find("span", class_="text-uppercase")
+
+    if commitment_span is not None:
+        anchor = commitment_span.find("a")
+        return anchor.text.strip()
+
+    return None
+
+def _extract_commitment_url(item):
+    commitment_span = item.find("span", class_="text-uppercase")
+
+    if commitment_span is not None:
+        anchor = commitment_span.find("a")
+        return PREFIX + anchor["href"]
+
+    return None
+
+def _extract_player_id(item):
+    name_anchor = item.find("a", class_="bd")
+
+    return name_anchor["href"].split('/')[-1].split('-')[-1]
+
+def _extract_player_name(item):
+    name_anchor = item.find("a", class_="bd")
+
+    return name_anchor.text.strip()
+
+def _extract_player_url(item):
+    name_anchor = item.find("a", class_="bd")
+
+    return PREFIX + name_anchor["href"]
+
+def _get_searched_player(element):
+    return {
+        "id": _extract_player_id(element),
+        "name": _extract_player_name(element),
+        "url": _extract_player_url(element),
+        "imageUrl": _extract_image_url(element),
+        "position": element.find("div", class_="col-position").text.strip(),
+        "club": _extract_club(element),
+        "highSchool": _extract_high_school(element),
+        "rating": _extract_rating(element),
+        "year": element.find("div", class_="col-grad").text.strip(),
+        "state": element.find("div", class_="col-state").text.strip(),
+        "commitment": _extract_commitment(element),
+        "commitmentUrl": _extract_commitment_url(element)
+    }
+
+def _get_searched_players(element):
+    players = []
+
+    items = element.find_all("div", class_=["item"])
+    for item in items:
+        players.append(_get_searched_player(item))
+
+    return players
+
+@cache.memoize(timeout=86400)  # cache for 1 day
+def search_for_players(gender: str, position: str, grad_year: str, region: str, state: str):
+    suffix = _generate_player_suffix(gender, position, grad_year, region, state, 0)
+
+    url = "https://www.topdrawersoccer.com/search/?query="
+
+    response = requests.get(url + suffix)
+    response.raise_for_status()
+
+    soup = BeautifulSoup(response.content, "html.parser")
+
+    players = _get_searched_players(soup)
+
+    pages = _get_search_pages(soup)
+    for page in pages:
+        suffix = _generate_player_suffix(gender, position, grad_year, region, state, page - 1)
+
+        response = requests.get(url + suffix)
+        response.raise_for_status()
+
+        soup = BeautifulSoup(response.content, "html.parser")
+
+        players.extend(_get_searched_players(soup))
+
+    return players

@@ -7,6 +7,8 @@ from common import utils
 from common.extensions import cache
 from pprint import pprint
 
+from lib import nwsl as library
+
 ns = Namespace("nwsl", description="NWSL related operations")
 
 
@@ -135,16 +137,8 @@ class Standings(Resource):
     @ns.marshal_list_with(standing_model)
     def get(self):
         """Get NWSL Standings"""
-
-        url = "https://d2nkt8hgeld8zj.cloudfront.net/services/nwsl.ashx/standings"
-
         try:
-            response = requests.get(url)
-            response.raise_for_status()
-
-            json = response.json()
-
-            return json["data"]["divisions"][0]["rankings"]
+            return library.get_standings()
         except HTTPError as http_err:
             return ns.abort(
                 HTTPStatus.BAD_REQUEST.value, f"HTTP error occurred: {http_err}"
@@ -156,30 +150,15 @@ class Standings(Resource):
 
 
 @ns.route("/players")
-class ClubList(Resource):
+class PlayerList(Resource):
     @ns.doc("player_list")
     @ns.response(HTTPStatus.OK.value, "Get the NWSL player list", [player_model])
     @ns.response(HTTPStatus.BAD_REQUEST.value, "Item not found")
     @ns.marshal_list_with(player_model)
-    @cache.cached(timeout=604800)
     def get(self):
         """List all players"""
-
-        url = "https://d2nkt8hgeld8zj.cloudfront.net/services/nwsl.ashx/players"
-
         try:
-            response = requests.get(url)
-            response.raise_for_status()
-
-            json = response.json()
-
-            results = []
-
-            for record in json["data"]:
-                if record['team'] is not None:
-                    results.append(record)
-
-            return results
+            return library.get_players()
         except HTTPError as http_err:
             return ns.abort(
                 HTTPStatus.BAD_REQUEST.value, f"HTTP error occurred: {http_err}"

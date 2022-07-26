@@ -71,7 +71,7 @@ class Commitments(Resource):
     def post(self):
         """Search for college commitments"""
         try:
-            args = players_parser.parse_args()
+            args = commitments_parser.parse_args()
 
             print(args)
 
