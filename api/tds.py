@@ -66,6 +66,18 @@ school_model = ns.model(
     },
 )
 
+commitments_by_club_model = ns.model(
+    "CommitmentsByClub",
+    {
+        "club": fields.String(required=True, description="The club name"),
+        "di": fields.Integer(required=True, description="The number of DI commits."),
+        "dii": fields.Integer(required=True, description="The number of DII commits."),
+        "diii": fields.Integer(required=True, description="The number of DII commits."),
+        "naia": fields.Integer(required=True, description="The number of NAIA commits."),
+        "total": fields.Integer(required=True, description="The total number of commits.")
+    }
+)
+
 conference_model = ns.model(
     "Conference",
     {
@@ -94,7 +106,6 @@ division_parser = reqparse.RequestParser()
 division_parser.add_argument(
     "division", type=str, choices=("di", "dii", "diii", "naia", "njcaa")
 )
-
 
 
 @ns.route("/college/organizations")
@@ -164,7 +175,6 @@ transfer_model = ns.model(
         "newSchoolUrl": fields.String(required=False, description="the URL of the players new school")
     }
 )
-
 
 
 players_parser = reqparse.RequestParser(bundle_errors=True)
@@ -282,6 +292,7 @@ players_parser.add_argument(
     help='Bad choice: {error_msg}'
 )
 
+
 @ns.route("/college/transfers")
 class TransferTracker(Resource):
     @ns.doc("transfer_tracker")
@@ -319,6 +330,7 @@ def _get_gender_id(args):
 
     return ""
 
+
 def _get_position_id(args):
     position = args["position"]
 
@@ -330,6 +342,7 @@ def _get_position_id(args):
 
     return "0"
 
+
 def _get_grad_year(args):
     grad_year = args["gradyear"]
 
@@ -337,6 +350,7 @@ def _get_grad_year(args):
         return ""
 
     return grad_year
+
 
 def _get_region_id(args):
     region = args["region"]
@@ -349,6 +363,7 @@ def _get_region_id(args):
 
     return "0"
 
+
 def _get_state_id(args):
     state = args["state"]
 
@@ -359,6 +374,7 @@ def _get_state_id(args):
         return config.STATE_LOOKUP[state]
 
     return 0
+
 
 @ns.route("/players")
 @ns.expect(players_parser)
@@ -379,11 +395,6 @@ class PlayerSearch(Resource):
             state = _get_state_id(args)
 
             return topdrawer.search_for_players(gender, position, grad_year, region, state)
-
-            # player_search = utils.PlayerSearch()
-            # players = player_search.get_players(args)
-
-            # return players
         except HTTPError as http_err:
             print(f"HTTP error occurred: {http_err}")
             return ns.abort(
@@ -461,6 +472,23 @@ class Conference(Resource):
             )
 
 
+commits_club_parser = ns.parser()
+commits_club_parser.add_argument(
+    "gender",
+    type=str,
+    location="args",
+    choices=("all", "male", "female"),
+    default="female",
+)
+
+commits_club_parser.add_argument(
+    "year",
+    type=str,
+    location="args",
+    choices=("2022", "2023", "2024", "2025"),
+    default="2023",
+)
+
 commits_parser = ns.parser()
 commits_parser.add_argument(
     "gender",
@@ -490,10 +518,6 @@ commits_parser.add_argument(
     "/college/conference/commits/<string:gender>/<string:division>/<string:name>/<int:year>"
 )
 @ns.expect(commits_parser)
-# @ns.param('gender', 'The gender of the target conference')
-# @ns.param('division', 'The division of the target conference')
-# @ns.param('name', 'The name of the target conference')
-# @ns.param('year', 'The graduation year of the commits')
 class ConferenceCommits(Resource):
     @ns.doc("get_conference_commits")
     @ns.response(HTTPStatus.OK.value, "Get the conference commits", conference_model)
@@ -502,7 +526,6 @@ class ConferenceCommits(Resource):
     def get(self, gender: str, division: str, name: str, year: int):
         """Get a conferences commitments"""
         try:
-            print("Actively processing conference commits ...")
             schools = topdrawer.get_conference_commits(gender, division, name, year)
 
             return schools
@@ -515,3 +538,23 @@ class ConferenceCommits(Resource):
                 HTTPStatus.BAD_REQUEST.value, f"Other error occurred: {err}"
             )
 
+
+@ns.route("/college/commits/club/<string:gender>/<int:year>")
+@ns.expect(commits_club_parser)
+class ConferenceCommitsByClub(Resource):
+    @ns.doc("get_conference_commits_club")
+    @ns.response(HTTPStatus.OK.value, "Get commitments data for clubs", conference_model)
+    @ns.response(HTTPStatus.BAD_REQUEST.value, "Commitments not found")
+    @ns.marshal_list_with(commitments_by_club_model)
+    def get(self, gender: str, year: int):
+        """Get a commitment data for clubs"""
+        try:
+            return topdrawer.get_commitments_by_club(gender, year)
+        except HTTPError as http_err:
+            return ns.abort(
+                HTTPStatus.BAD_REQUEST.value, f"HTTP error occurred: {http_err}"
+            )
+        except Exception as err:
+            return ns.abort(
+                HTTPStatus.BAD_REQUEST.value, f"Other error occurred: {err}"
+            )

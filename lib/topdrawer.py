@@ -573,3 +573,38 @@ def search_for_players(gender: str, position: str, grad_year: str, region: str, 
         players.extend(_get_searched_players(soup))
 
     return players
+
+@cache.memoize(timeout=86400)  # cache for 1 day
+def get_commitments_by_club(gender: str, grad_year: int):
+    if gender == "female":
+        url = f"https://www.topdrawersoccer.com/commitments/club/women/{grad_year}"
+    else:
+        url = f"https://www.topdrawersoccer.com/commitments/club/men/{grad_year}"
+
+    response = requests.get(url)
+    response.raise_for_status()
+
+    soup = BeautifulSoup(response.content, "html.parser")
+
+    table = soup.find('table', class_=["table-striped"])
+
+    if table is None:
+        return []
+
+    body = table.find('tbody')
+    rows = body.find_all("tr")
+
+    records = []
+    for row in rows:
+        cells = row.findChildren("td")
+        record = {
+            "club": cells[0].text.strip(),
+            "di": int(cells[1].text.strip()),
+            "dii": int(cells[2].text.strip()),
+            "diii": int(cells[3].text.strip()),
+            "naia": int(cells[4].text.strip()),
+            "total": int(cells[5].text.strip())
+        }
+        records.append(record)
+
+    return records
