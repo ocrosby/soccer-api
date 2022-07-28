@@ -65,9 +65,8 @@ Specifying the Startup File
 > flask run
 ```
 
-
-
 ## References
+
 * [Beginners Guide on Installing Flask](https://www.section.io/engineering-education/complete-guide-on-installing-flask-for-beginners/)
 * [Structuring Large Applications](https://www.section.io/engineering-education/structuring-large-applications-with-blueprints-and-application-factory-in-flask/)
 * [Flask Blueprint Architect](https://realpython.com/flask-blueprint/)

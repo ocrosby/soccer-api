@@ -15,6 +15,20 @@
       "program": "${file}",
       "console": "integratedTerminal",
       "justMyCode": true
+    },
+    {
+      "name": "Python: Debug Tests",
+      "type": "python",
+      "request": "launch",
+      "program": "${file}",
+      "purpose": [
+        "debug-test"
+      ],
+      "console": "integratedTerminal",
+      "env": {
+        "PYTEST_ADDOPTS": "--no-cov"
+      },
+      "justMyCode": false
     }
   ]
 }

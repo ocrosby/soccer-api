@@ -1,3 +1,4 @@
+import re
 import requests
 
 from bs4 import BeautifulSoup
@@ -12,6 +13,8 @@ from . import ecnl
 
 PREFIX = "https://www.topdrawersoccer.com"
 
+ECNL_CLUBS = ecnl.get_clubs()
+GA_CLUBS = ga.get_clubs()
 
 def get_identifier_from_url(url):
     if url is None:
@@ -106,28 +109,24 @@ def get_conference(gender: str, division: str, conference_name: str):
 
 
 @cache.memoize(timeout=604800)  # 1 week
-def _get_league(club_name: str, ecnl_clubs, ga_clubs):
+def _get_league(club_name: str):
     if club_name is None:
         return "Other"
 
     if len(club_name) == 0:
         return "Other"
 
-    if tools.is_member_club(club_name, ecnl_clubs):
+    if tools.is_member_club(club_name, ECNL_CLUBS):
         return "ECNL"
-    elif tools.is_member_club(club_name, ga_clubs):
+    elif tools.is_member_club(club_name, GA_CLUBS):
         return "GA"
     else:
         print("Could not find the club (" + club_name + ")")
         return "Other"
 
 
-@cache.memoize(timeout=604800)  # 1 week
-def get_conference_commits(gender: str, division: str, conference_name: str, year: int):
-    content = get_conference_commitments_content(gender, division, conference_name)
-
-    soup = BeautifulSoup(content, "html.parser")
-    tables = soup.find_all("table", class_=["table-striped", "tds-table", "female"])
+def _extract_conference_commits(element, year: int = 0):
+    tables = element.find_all("table", class_=["table-striped", "tds-table", "female"])
 
     body = None
     for table in tables:
@@ -138,8 +137,20 @@ def get_conference_commits(gender: str, division: str, conference_name: str, yea
     if body is None:
         return []
 
-    ecnl_clubs = ecnl.get_clubs()
-    ga_clubs = ga.get_clubs()
+    school_mapping = {}
+    anchors = element.find_all("a", class_=["player-name"])
+    for anchor in anchors:
+        href = anchor["href"]
+        name = anchor.text.strip()
+
+        school_mapping[name] = {
+            "name": name,
+            "url": PREFIX + href,
+            "clgid": int(href.split("/")[-1].split("-")[-1])
+        }
+
+        # /college-soccer/college-soccer-details/women/fgcu/clgid-203
+        # Get the id out of the url
 
     schools = []
     rows = body.find_all("tr")
@@ -150,33 +161,78 @@ def get_conference_commits(gender: str, division: str, conference_name: str, yea
                 "name": columns[0].text.strip(),
                 "players": []
             }
+
+            if school["name"] in school_mapping:
+                item = school_mapping[school["name"]]
+                school["url"] = item["url"]
+                school["clgid"] = item["clgid"]
             # print(f"Adding school {school['name']} ...")
             schools.append(school)
         else:
-            grad_year = columns[1].text.strip()
+            if year > 0:
+                grad_year = columns[1].text.strip()
 
-            if int(grad_year) == year:
-                player = {
-                    "name": columns[0].text.strip(),
-                    "url": PREFIX + columns[0].find("a")["href"],
-                    "year": grad_year,
-                    "position": columns[2].text.strip(),
-                    "city": columns[3].text.strip(),
-                    "state": columns[4].text.strip(),
-                    "club": columns[5].text.strip().replace("  ", " ")
-                }
+                if int(grad_year) == year:
+                    player = {
+                        "name": columns[0].text.strip(),
+                        "url": PREFIX + columns[0].find("a")["href"],
+                        "year": grad_year,
+                        "position": columns[2].text.strip(),
+                        "city": columns[3].text.strip(),
+                        "state": columns[4].text.strip(),
+                        "club": columns[5].text.strip().replace("  ", " ")
+                    }
 
-                # print(f"Loading details for player '{player['name']}' ...")
-                topdrawer.load_player_details(player)
-                # print("Details loaded successfully")
+                    # print(f"Loading details for player '{player['name']}' ...")
+                    topdrawer.load_player_details(player)
+                    # print("Details loaded successfully")
 
-                player["club"] = config.translate_club_name(player["club"])
-                player["league"] = _get_league(player["club"], ecnl_clubs, ga_clubs)
+                    player["club"] = config.translate_club_name(player["club"])
+                    player["league"] = _get_league(player["club"])
 
-                # print(f"Adding '{player['name']}' to '{school['name']}' ...")
-                school["players"].append(player)
+                    # print(f"Adding '{player['name']}' to '{school['name']}' ...")
+                    school["players"].append(player)
+            else:
+                # If the year is less than or equal to 0 completely skip loading players,
+                # it just takes way too long.
+                pass
 
     return schools
+
+@cache.memoize(timeout=86400)  # 1 day
+def get_conference_commitment_chart_data(gender: str, name: str, cfid: int, year: int):
+    schools = get_conference_details(gender, name, cfid, year)
+
+    leagues = []
+    players = []
+    for school in schools:
+        for player in school["players"]:
+            players.append(player)
+            if player["league"] not in leagues:
+                leagues.append(player["league"])
+
+    leagues.sort()
+
+    records = []
+    for league in leagues:
+        record = { "name": '', "league": league, "value": 0 };
+        for player in players:
+            if player["league"] == league:
+                record["value"] += 1
+
+        record["name"] = league + " " + str(round(100 * (record["value"] / len(players)))) + "%"
+        records.append(record)
+
+    return records
+
+
+@cache.memoize(timeout=604800)  # 1 week
+def get_conference_commits(gender: str, division: str, conference_name: str, year: int = 0):
+    content = get_conference_commitments_content(gender, division, conference_name)
+
+    soup = BeautifulSoup(content, "html.parser")
+
+    return _extract_conference_commits(soup, year)
 
 
 def _get_player_rating(element):
@@ -208,6 +264,23 @@ def _get_player_position(element):
 
     return position
 
+def _get_player_year(element):
+    div = element.find("div", class_=["player-position"])
+
+    if div is None:
+        return None
+
+    buffer = div.text.strip()
+    tokens = buffer.split("-")
+
+    if len(tokens) > 1:
+        year = tokens[1].strip()
+        tokens = year.split(" ")
+        year = tokens[-1]
+    else:
+        year = None
+
+    return year
 
 def _get_player_commitment(element):
     div = element.find("div", class_=["player-position"])
@@ -284,6 +357,8 @@ def load_player_details(player):
 
     _load_profile_grid_settings(soup, player)
 
+    player["league"] = _get_league(player["club"])
+    player["year"] = _get_player_year(soup)
     player["rating"] = _get_player_rating(soup)
     player["position"] = _get_player_position(soup)
     player["commitment"] = _get_player_commitment(soup)
@@ -574,6 +649,102 @@ def search_for_players(gender: str, position: str, grad_year: str, region: str, 
 
     return players
 
+
+def _extract_conference_standings(soup):
+    heading = soup.find("h1", text=re.compile(r"Conference Standings"))
+    parent = heading.parent.parent.parent;
+    parent.find("table", class_=["table-striped", "tds_table"])
+
+
+@cache.memoize(timeout=86400)  # cache for 1 day
+def get_college_details(gender: str, name: str, clgid: int):
+    gender = gender.strip().lower()
+
+    if gender == "male":
+        gender = "men"
+    elif gender == "female":
+        gender = "women"
+
+    name = name.strip().lower().replace(" ", "-")
+    clgid = str(clgid)
+
+    url = f"https://www.topdrawersoccer.com/college-soccer/college-soccer-details/{gender}/{name}/clgid-{clgid}"
+
+    response = requests.get(url)
+    response.raise_for_status()
+
+    soup = BeautifulSoup(response.content, "html.parser")
+
+    header = soup.find("th", text=re.compile(r"Program Information"))
+    table = header.parent.parent.parent
+    body = table.find("tbody")
+    rows = body.findChildren("tr")
+
+    details = {}
+    for row in rows:
+        cells = row.findChildren("td")
+        attribute = cells[0].text.strip()
+
+        if len(attribute) > 0 and attribute[-1] == ':':
+            attribute = attribute[:-1] # Omit the trailing colon.
+
+        attribute = attribute.strip() # Strip one more time just in case.
+
+        cell = cells[1]
+        if attribute == "Conference":
+            details["conference"] = tools.get_anchor_text(cell)
+            details["conferenceUrl"] = tools.get_anchor_url(cell, PREFIX)
+        elif attribute == "Nickname":
+            details["nickname"] = cell.text.strip()
+        elif attribute == "State":
+            details["state"] = cell.text.strip()
+        elif attribute == "City":
+            details["city"] = cell.text.strip()
+        elif attribute == "Enrollment":
+            details["enrollment"] = int(cell.text.strip())
+        elif attribute == "Head Coach":
+            details["coach"] = cell.text.strip()
+        elif attribute == "Phone Number":
+            details["phone"] = cell.text.strip()
+        else:
+            # Do nothing for now
+            pass
+
+    return details
+
+@cache.memoize(timeout=86400)  # cache for 1 day
+def get_player_details(name: str, pid: int):
+    player = { "id": pid, "name": name }
+    pid = str(pid)
+
+    name = name.strip().lower().replace(" ", "-")
+    player["url"] = f"https://www.topdrawersoccer.com/club-player-profile/{name}/pid-{pid}"
+
+    load_player_details(player)
+
+    return player
+
+@cache.memoize(timeout=86400)  # cache for 1 day
+def get_conference_details(gender: str, name: str, cfid: int, year: int = 0):
+    gender = gender.strip().lower()
+
+    if gender == "male":
+        gender = "men"
+    elif gender == "female":
+        gender = "women"
+
+    name = name.strip().lower().replace(" ", "-")
+    cfid = str(cfid)
+
+    url = f"https://www.topdrawersoccer.com/college-soccer/college-conferences/conference-details/{gender}/{name}/cfid-{cfid}/tab-commitments#commitments"
+
+    response = requests.get(url)
+    response.raise_for_status()
+
+    soup = BeautifulSoup(response.content, "html.parser")
+
+    return _extract_conference_commits(soup, year)
+
 @cache.memoize(timeout=86400)  # cache for 1 day
 def get_commitments_by_club(gender: str, grad_year: int):
     if gender == "female":
@@ -608,3 +779,4 @@ def get_commitments_by_club(gender: str, grad_year: int):
         records.append(record)
 
     return records
+

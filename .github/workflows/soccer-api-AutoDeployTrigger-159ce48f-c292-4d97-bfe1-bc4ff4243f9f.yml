@@ -10,7 +10,7 @@ on:
     - '**'
     - '.github/workflows/soccer-api-AutoDeployTrigger-159ce48f-c292-4d97-bfe1-bc4ff4243f9f.yml'
 
-  # Allow mannually trigger
+  # Allow manually trigger
   workflow_dispatch:
 
 jobs:

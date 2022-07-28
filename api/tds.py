@@ -61,6 +61,8 @@ player_model = ns.model(
 school_model = ns.model(
     "School",
     {
+        "clgid": fields.Integer(required=False, description="The TopDrawerSoccer identifier for the school", default=-1),
+        "url": fields.String(required=False, description="The TopDrawerSoccer URL for the school", default=None),
         "name": fields.String(required=True, description="The school name"),
         "players": fields.List(fields.Nested(player_model)),
     },
@@ -520,7 +522,7 @@ commits_parser.add_argument(
 @ns.expect(commits_parser)
 class ConferenceCommits(Resource):
     @ns.doc("get_conference_commits")
-    @ns.response(HTTPStatus.OK.value, "Get the conference commits", conference_model)
+    @ns.response(HTTPStatus.OK.value, "Get the conference commits", school_model)
     @ns.response(HTTPStatus.BAD_REQUEST.value, "Commitments not found")
     @ns.marshal_list_with(school_model)
     def get(self, gender: str, division: str, name: str, year: int):
@@ -550,6 +552,140 @@ class ConferenceCommitsByClub(Resource):
         """Get a commitment data for clubs"""
         try:
             return topdrawer.get_commitments_by_club(gender, year)
+        except HTTPError as http_err:
+            return ns.abort(
+                HTTPStatus.BAD_REQUEST.value, f"HTTP error occurred: {http_err}"
+            )
+        except Exception as err:
+            return ns.abort(
+                HTTPStatus.BAD_REQUEST.value, f"Other error occurred: {err}"
+            )
+
+college_details_parser = reqparse.RequestParser(bundle_errors=True)
+
+college_details_parser.add_argument("name", type=str, location="args", default="Jacksonville State")
+college_details_parser.add_argument(
+    "gender",
+    type=str,
+    location="args",
+    choices=("Male", "Female"),
+    default="Female",
+    help='Bad choice: {error_msg}'
+)
+college_details_parser.add_argument("clgid", type=int, location="args", default=258)
+
+college_details_model = ns.model(
+    "College Details",
+    {
+        "conference": fields.String(required=True, description="The conference name"),
+        "conferenceUrl": fields.String(required=True, description="The conference url"),
+        "nickname": fields.String(required=True, description="The schools nickname"),
+        "state": fields.String(required=True, description="The schools state"),
+        "city": fields.String(required=True, description="The schools city"),
+        "enrollment": fields.Integer(required=True, description="The schools enrollment"),
+        "coach": fields.String(required=True, description="The coaches name"),
+        "phone": fields.String(required=True, description="The phone number")
+    }
+)
+
+@ns.route("/college/details/<string:gender>/<string:name>/<int:clgid>")
+@ns.expect(college_details_parser)
+class CollegeDetails(Resource):
+    @ns.doc("get_college_details")
+    @ns.response(HTTPStatus.OK.value, "Get college details", college_details_model)
+    @ns.response(HTTPStatus.BAD_REQUEST.value, "Details not found")
+    @ns.marshal_with(college_details_model)
+    def get(self, gender: str, name: str, clgid: int):
+        """Get a colleges details"""
+        try:
+            return topdrawer.get_college_details(gender, name, clgid)
+        except HTTPError as http_err:
+            return ns.abort(
+                HTTPStatus.BAD_REQUEST.value, f"HTTP error occurred: {http_err}"
+            )
+        except Exception as err:
+            return ns.abort(
+                HTTPStatus.BAD_REQUEST.value, f"Other error occurred: {err}"
+            )
+
+conference_details_parser = reqparse.RequestParser(bundle_errors=True)
+
+conference_details_parser.add_argument(
+    "gender",
+    type=str,
+    location="args",
+    choices=("Male", "Female"),
+    default="Female",
+    help='Bad choice: {error_msg}'
+)
+conference_details_parser.add_argument("name", type=str, location="args", default="Atlantic Coast")
+conference_details_parser.add_argument("cfid", type=int, location="args", default=3)
+
+@ns.route("/college/conference/details/<string:gender>/<string:name>/<int:cfid>")
+@ns.expect(conference_details_parser)
+class ConferenceDetails(Resource):
+    @ns.doc("get_conference_details")
+    @ns.response(HTTPStatus.OK.value, "Get conference details", school_model)
+    @ns.response(HTTPStatus.BAD_REQUEST.value, "Details not found")
+    @ns.marshal_list_with(school_model)
+    def get(self, gender: str, name: str, cfid: int):
+        """Get a conferences details"""
+        try:
+            return topdrawer.get_conference_details(gender, name, cfid)
+        except HTTPError as http_err:
+            return ns.abort(
+                HTTPStatus.BAD_REQUEST.value, f"HTTP error occurred: {http_err}"
+            )
+        except Exception as err:
+            return ns.abort(
+                HTTPStatus.BAD_REQUEST.value, f"Other error occurred: {err}"
+            )
+
+commitment_chart_data_model = ns.model(
+    "Commitment Chart Data",
+    {
+        "name": fields.String(required=True, description="The display name of the pie slice"),
+        "league": fields.String(required=True, description="The name of the league"),
+        "value": fields.Integer(required=True, description="The number of players matching the league")
+    }
+)
+
+@ns.route("/college/conference/commits/chart/data/<string:gender>/<string:name>/<int:cfid>/<int:year>")
+@ns.param("gender", "The target gender", choices=("Male", "Female"), type=str, default="Female")
+@ns.param("name", "The name of the conference", type=str, default="ASUN")
+@ns.param("cfid", "The TopDrawerSoccer identifier of the conference", type=int, default=22)
+@ns.param("year", "The graduation year", choices=(2022,2023,2024,2025), type=int, default=2023)
+class ConferenceCommitmentsChartData(Resource):
+    @ns.doc("get_conference_commitments_chart_data")
+    @ns.response(HTTPStatus.OK.value, "Get conference commitments chart data", commitment_chart_data_model)
+    @ns.response(HTTPStatus.BAD_REQUEST.value, "Details not found")
+    @ns.marshal_list_with(commitment_chart_data_model)
+    def get(self, gender: str, name: str, cfid: int, year: int):
+        """Get a conference commitment chart data"""
+        try:
+            return topdrawer.get_conference_commitment_chart_data(gender, name, cfid, year)
+        except HTTPError as http_err:
+            return ns.abort(
+                HTTPStatus.BAD_REQUEST.value, f"HTTP error occurred: {http_err}"
+            )
+        except Exception as err:
+            return ns.abort(
+                HTTPStatus.BAD_REQUEST.value, f"Other error occurred: {err}"
+            )
+
+
+@ns.route("/player/details/<string:name>/<int:pid>")
+@ns.param("name", "The name of the target conference", type=str, default="Olivia Shippee")
+@ns.param("pid", "The TopDrawerSoccer identifier of the player", type=int, default=150942)
+class PlayerDetails(Resource):
+    @ns.doc("get_player_details")
+    @ns.response(HTTPStatus.OK.value, "Get player details", player_model)
+    @ns.response(HTTPStatus.BAD_REQUEST.value, "Details not found")
+    @ns.marshal_with(player_model)
+    def get(self, name: str, pid: int):
+        """Get a players details"""
+        try:
+            return topdrawer.get_player_details(name, pid)
         except HTTPError as http_err:
             return ns.abort(
                 HTTPStatus.BAD_REQUEST.value, f"HTTP error occurred: {http_err}"

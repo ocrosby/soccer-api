@@ -4,7 +4,6 @@ from bs4 import BeautifulSoup
 
 from common.utils import cache
 
-@cache.cached(timeout=604800)
 def get_clubs():
     url = "https://public.totalglobalsports.com/api/Event/get-org-club-list-by-orgID/9"
 
