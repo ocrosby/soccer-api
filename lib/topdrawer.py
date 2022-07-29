@@ -665,7 +665,7 @@ def get_college_details(gender: str, name: str, clgid: int):
     elif gender == "female":
         gender = "women"
 
-    name = name.strip().lower().replace(" ", "-")
+    name = name.strip().lower().replace(" ", "-").replace(".", "").replace("'", "")
     clgid = str(clgid)
 
     url = f"https://www.topdrawersoccer.com/college-soccer/college-soccer-details/{gender}/{name}/clgid-{clgid}"
